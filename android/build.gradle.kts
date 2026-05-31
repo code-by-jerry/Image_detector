@@ -1,3 +1,7 @@
+import com.android.build.gradle.BaseExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 buildscript {
     repositories {
         google()
@@ -27,6 +31,26 @@ subprojects {
         newBuildDir.dir(project.name)
 
     project.layout.buildDirectory.value(newSubprojectBuildDir)
+}
+
+// Align Java/Kotlin JVM targets for Flutter plugins (e.g. tflite_flutter uses Java 1.8 by default).
+// Must be registered before evaluationDependsOn below.
+subprojects {
+    afterEvaluate {
+        if (plugins.hasPlugin("com.android.library")) {
+            extensions.configure<BaseExtension>("android") {
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+            }
+        }
+        tasks.withType(KotlinCompile::class.java).configureEach {
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_17)
+            }
+        }
+    }
 }
 
 subprojects {
