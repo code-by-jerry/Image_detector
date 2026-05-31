@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../l10n/report_localizer.dart';
 import '../../models/dairy_pipeline_report.dart';
 import '../../services/milk_production_scale.dart';
 import '../../theme/app_theme.dart';
@@ -24,26 +26,28 @@ class EnterpriseAiDashboard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _alertBanner(),
+        _alertBanner(context),
         const SizedBox(height: 16),
-        _yieldHero(),
+        _yieldHero(context),
         const SizedBox(height: 16),
-        _metricsRow(),
+        _metricsRow(context),
         const SizedBox(height: 16),
-        _workflowSection(),
+        _workflowSection(context),
         const SizedBox(height: 16),
-        _detectionGrid(),
+        _detectionGrid(context),
         const SizedBox(height: 16),
-        _productionEstimateCard(),
+        _productionEstimateCard(context),
         if (report.recommendation != null) ...[
           const SizedBox(height: 16),
-          _insightCard(),
+          _insightCard(context),
         ],
       ],
     );
   }
 
-  Widget _alertBanner() {
+  Widget _alertBanner(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final loc = ReportLocalizer(l10n);
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       glow: report.alert == DairyAlert.success,
@@ -63,7 +67,7 @@ class EnterpriseAiDashboard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _alertTitle(),
+                  _alertTitle(l10n),
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
@@ -71,7 +75,7 @@ class EnterpriseAiDashboard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  report.alertMessage,
+                  loc.text(report.alertMessage),
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,
@@ -86,14 +90,16 @@ class EnterpriseAiDashboard extends StatelessWidget {
     );
   }
 
-  String _alertTitle() => switch (report.alert) {
-        DairyAlert.success => 'Analysis successful',
-        DairyAlert.caution => 'Review recommended',
-        DairyAlert.blocked => 'Prediction blocked',
-        DairyAlert.info => 'AI insight',
+  String _alertTitle(AppLocalizations l10n) => switch (report.alert) {
+        DairyAlert.success => l10n.alertAnalysisSuccessful,
+        DairyAlert.caution => l10n.alertReviewRecommended,
+        DairyAlert.blocked => l10n.alertPredictionBlocked,
+        DairyAlert.info => l10n.alertAiInsight,
       };
 
-  Widget _yieldHero() {
+  Widget _yieldHero(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final loc = ReportLocalizer(l10n);
     final pct = report.yieldConfidence.clamp(0.0, 1.0);
     return GlassCard(glow: true, animateDelayMs: 80, child: Row(
       children: [
@@ -119,9 +125,9 @@ class EnterpriseAiDashboard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'DAILY MILK PRODUCTION',
-                style: TextStyle(
+              Text(
+                l10n.dailyMilkProduction,
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.2,
@@ -139,9 +145,11 @@ class EnterpriseAiDashboard extends StatelessWidget {
                 ),
               ),
               Text(
-                'Range ${MilkProductionScale.minLiters.toStringAsFixed(0)}–'
-                '${MilkProductionScale.maxLiters.toStringAsFixed(0)} L · '
-                '${report.yieldRange}',
+                l10n.yieldRangeLabel(
+                  MilkProductionScale.minLiters.toStringAsFixed(0),
+                  MilkProductionScale.maxLiters.toStringAsFixed(0),
+                  loc.text(report.yieldRange),
+                ),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -155,19 +163,29 @@ class EnterpriseAiDashboard extends StatelessWidget {
     ));
   }
 
-  Widget _metricsRow() {
+  Widget _metricsRow(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final loc = ReportLocalizer(l10n);
     return Row(
       children: [
         Expanded(
-          child: _miniMetric('Species', report.species, Icons.pets_rounded),
+          child: _miniMetric(l10n.metricSpecies, loc.text(report.species), Icons.pets_rounded),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _miniMetric('Lactation', report.lactationState, Icons.water_drop_outlined),
+          child: _miniMetric(
+            l10n.metricLactation,
+            loc.text(report.lactationState),
+            Icons.water_drop_outlined,
+          ),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _miniMetric('Health', report.healthStatus, Icons.favorite_border_rounded),
+          child: _miniMetric(
+            l10n.metricHealth,
+            loc.text(report.healthStatus),
+            Icons.favorite_border_rounded,
+          ),
         ),
       ],
     ).animate(delay: 120.ms).fadeIn().slideY(begin: 0.03, end: 0);
@@ -207,19 +225,20 @@ class EnterpriseAiDashboard extends StatelessWidget {
     );
   }
 
-  Widget _workflowSection() {
+  Widget _workflowSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return GlassCard(
       animateDelayMs: 160,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.account_tree_rounded, color: AppColors.primary, size: 20),
-              SizedBox(width: 8),
+              const Icon(Icons.account_tree_rounded, color: AppColors.primary, size: 20),
+              const SizedBox(width: 8),
               Text(
-                'AI Pipeline',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                l10n.aiPipeline,
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
               ),
             ],
           ),
@@ -229,7 +248,7 @@ class EnterpriseAiDashboard extends StatelessWidget {
             final step = e.value;
             return Padding(
               padding: EdgeInsets.only(bottom: i < report.workflowSteps.length - 1 ? 12 : 0),
-              child: _pipelineStep(step, isLast: i == report.workflowSteps.length - 1),
+              child: _pipelineStep(context, step, isLast: i == report.workflowSteps.length - 1),
             );
           }),
         ],
@@ -237,7 +256,8 @@ class EnterpriseAiDashboard extends StatelessWidget {
     );
   }
 
-  Widget _pipelineStep(PipelineStep step, {required bool isLast}) {
+  Widget _pipelineStep(BuildContext context, PipelineStep step, {required bool isLast}) {
+    final loc = ReportLocalizer.of(context);
     final color = switch (step.status) {
       PipelineStepStatus.pass => AppColors.success,
       PipelineStepStatus.fail => AppColors.danger,
@@ -280,11 +300,11 @@ class EnterpriseAiDashboard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${step.index}. ${step.title}',
+                  '${step.index}. ${loc.localizePipelineStepTitle(step.title)}',
                   style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                 ),
                 Text(
-                  step.subtitle,
+                  loc.localizePipelineStepSubtitle(step.subtitle),
                   style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
                 ),
               ],
@@ -295,22 +315,32 @@ class EnterpriseAiDashboard extends StatelessWidget {
     );
   }
 
-  Widget _detectionGrid() {
+  Widget _detectionGrid(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final loc = ReportLocalizer(l10n);
     return GlassCard(
       animateDelayMs: 200,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Detection panel',
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          Text(
+            l10n.detectionPanel,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
           ),
           const SizedBox(height: 14),
-          _detectRow('Sex classification', report.sex, '${(report.sexConfidence * 100).round()}%'),
-          _detectRow('Lactation stage', report.lactationStage, 'DIM'),
           _detectRow(
-            'Species confidence',
-            report.species,
+            l10n.detectSexClassification,
+            loc.text(report.sex),
+            '${(report.sexConfidence * 100).round()}%',
+          ),
+          _detectRow(
+            l10n.detectLactationStage,
+            loc.text(report.lactationStage),
+            l10n.dimBadge,
+          ),
+          _detectRow(
+            l10n.detectSpeciesConfidence,
+            loc.text(report.species),
             '${(report.speciesConfidence * 100).round()}%',
           ),
         ],
@@ -352,7 +382,8 @@ class EnterpriseAiDashboard extends StatelessWidget {
     );
   }
 
-  Widget _productionEstimateCard() {
+  Widget _productionEstimateCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final liters = MilkProductionScale.clamp(report.yieldLiters);
     final conf = report.yieldConfidence.clamp(0.0, 1.0);
 
@@ -361,9 +392,9 @@ class EnterpriseAiDashboard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Production estimate',
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          Text(
+            l10n.productionEstimate,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
           ),
           const SizedBox(height: 12),
           Row(
@@ -378,11 +409,11 @@ class EnterpriseAiDashboard extends StatelessWidget {
                   height: 1,
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 6, bottom: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 6, bottom: 8),
                 child: Text(
-                  'L / day',
-                  style: TextStyle(
+                  l10n.litersPerDay,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textSecondary,
@@ -397,7 +428,7 @@ class EnterpriseAiDashboard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  '${(conf * 100).round()}% confidence',
+                  l10n.confidencePercent((conf * 100).round()),
                   style: const TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w700,
@@ -409,9 +440,10 @@ class EnterpriseAiDashboard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Identified from escutcheon measurement and on-device AI '
-            '(${MilkProductionScale.minLiters.toStringAsFixed(0)}–'
-            '${MilkProductionScale.maxLiters.toStringAsFixed(0)} L scale).',
+            l10n.productionEstimateFootnote(
+              MilkProductionScale.minLiters.toStringAsFixed(0),
+              MilkProductionScale.maxLiters.toStringAsFixed(0),
+            ),
             style: const TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
@@ -421,7 +453,7 @@ class EnterpriseAiDashboard extends StatelessWidget {
           if (sessionId != null) ...[
             const SizedBox(height: 8),
             Text(
-              'Session $sessionId',
+              l10n.sessionId(sessionId!),
               style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
             ),
           ],
@@ -430,7 +462,8 @@ class EnterpriseAiDashboard extends StatelessWidget {
     );
   }
 
-  Widget _insightCard() {
+  Widget _insightCard(BuildContext context) {
+    final loc = ReportLocalizer.of(context);
     return GlassCard(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -440,7 +473,7 @@ class EnterpriseAiDashboard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              report.recommendation!,
+              loc.text(report.recommendation!),
               style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, height: 1.4),
             ),
           ),

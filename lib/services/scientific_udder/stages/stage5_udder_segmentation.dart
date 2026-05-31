@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:image/image.dart' as img;
 
 import '../../../models/scientific_udder_models.dart';

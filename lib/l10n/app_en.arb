@@ -1,0 +1,282 @@
+{
+  "@@locale": "en",
+  "appTitle": "Milk Mirror",
+  "languageLabel": "Language",
+  "languageEnglish": "English",
+  "languageHindi": "Hindi",
+  "languageTelugu": "Telugu",
+  "headerSubtitleReady": "AI dairy analytics · rear udder capture",
+  "headerSubtitleBooting": "Booting prediction engine…",
+  "statusAiOnline": "AI ONLINE",
+  "statusBooting": "BOOTING",
+  "flowCapture": "Capture",
+  "flowReview": "Review",
+  "flowResults": "Results",
+  "captureHintReady": "AI ready · Camera / Gallery",
+  "captureHintLoading": "Loading AI…",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "uploadedPhoto": "Uploaded photo",
+  "reviewInstructions": "Confirm animal health, then proceed to AI analysis.",
+  "animalHealth": "Animal health",
+  "healthy": "Healthy",
+  "healthySubtitle": "Normal condition, fit for milking assessment",
+  "notHealthy": "Not healthy",
+  "notHealthySubtitle": "Visible illness, injury, or poor condition",
+  "changePhoto": "Change photo",
+  "proceed": "Proceed",
+  "analyzing": "Analyzing…",
+  "editHealthRetry": "Edit health & retry",
+  "newPhoto": "New photo",
+  "emptyStateHint": "Capture or upload an image to start recognition",
+  "errorCameraWindows": "Camera is not supported on Windows desktop. Please use \"Gallery\" to upload a buffalo photo.",
+  "errorPickImage": "Failed to open {source}. Please check app permissions.",
+  "@errorPickImage": {
+    "placeholders": {
+      "source": { "type": "String" }
+    }
+  },
+  "savedCapture": "Saved capture {id} (Firestore)",
+  "@savedCapture": {
+    "placeholders": {
+      "id": { "type": "String" }
+    }
+  },
+  "firestoreSaveFailed": "Firestore save failed: {error}",
+  "@firestoreSaveFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "analysisFailed": "Analysis failed. Please try another photo.",
+  "engineMilkMirror": "Pin bones + escutcheon (A–B, C–D)",
+  "engineMilkMirrorTflite": "Milk Mirror + AI",
+  "engineTflite": "TFLite AI",
+  "engineTfliteUntrained": "TFLite (needs training)",
+  "engineRulesGate": "Rules gate only",
+  "overlayAiAnalysisTitle": "AI Analysis in progress",
+  "overlayAiAnalysisSubtitle": "Computer vision · Measurement · Prediction engine",
+  "overlayStepCapture": "Capture",
+  "overlayStepCaptureSub": "Image loaded",
+  "overlayStepDetect": "Detect",
+  "overlayStepDetectSub": "Animal scan",
+  "overlayStepMeasure": "Measure",
+  "overlayStepMeasureSub": "Escutcheon",
+  "overlayStepPredict": "Predict",
+  "overlayStepPredictSub": "TFLite",
+  "showcaseBootingAi": "BOOTING AI",
+  "showcaseMilkMirror": "MILK MIRROR",
+  "showcaseBuffaloRearTitle": "Buffalo rear",
+  "showcaseBuffaloRearSub": "Pin bone escutcheon",
+  "showcaseCowRearTitle": "Cow rear",
+  "showcaseCowRearSub": "Herd comparison",
+  "showcaseMilkingTitle": "Milking",
+  "showcaseMilkingSub": "Yield context",
+  "showcaseAiScanTitle": "AI scanning",
+  "showcaseAiScanSub": "Neural analysis",
+  "showcaseHealthTitle": "Health",
+  "showcaseHealthSub": "Condition check",
+  "showcaseLactationTitle": "Lactation",
+  "showcaseLactationSub": "Stage & DIM",
+  "showcaseMilkYieldTitle": "Milk yield",
+  "showcaseMilkYieldSub": "Liters per day",
+  "alertAnalysisSuccessful": "Analysis successful",
+  "alertReviewRecommended": "Review recommended",
+  "alertPredictionBlocked": "Prediction blocked",
+  "alertAiInsight": "AI insight",
+  "dailyMilkProduction": "DAILY MILK PRODUCTION",
+  "yieldRangeLabel": "Range {min}–{max} L · {band}",
+  "@yieldRangeLabel": {
+    "placeholders": {
+      "min": { "type": "String" },
+      "max": { "type": "String" },
+      "band": { "type": "String" }
+    }
+  },
+  "metricSpecies": "Species",
+  "metricLactation": "Lactation",
+  "metricHealth": "Health",
+  "aiPipeline": "AI Pipeline",
+  "detectionPanel": "Detection panel",
+  "detectSexClassification": "Sex classification",
+  "detectLactationStage": "Lactation stage",
+  "detectSpeciesConfidence": "Species confidence",
+  "dimBadge": "DIM",
+  "productionEstimate": "Production estimate",
+  "litersPerDay": "L / day",
+  "confidencePercent": "{percent}% confidence",
+  "@confidencePercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "productionEstimateFootnote": "Identified from escutcheon measurement and on-device AI ({min}–{max} L scale).",
+  "@productionEstimateFootnote": {
+    "placeholders": {
+      "min": { "type": "String" },
+      "max": { "type": "String" }
+    }
+  },
+  "sessionId": "Session {id}",
+  "@sessionId": {
+    "placeholders": {
+      "id": { "type": "String" }
+    }
+  },
+  "escutcheonVision": "Escutcheon vision",
+  "metricAbHeight": "A–B height",
+  "metricCdWidth": "C–D width",
+  "metricArea": "Area",
+  "metricSymmetry": "Symmetry %",
+  "milkMirrorAnalysis": "Milk Mirror Analysis",
+  "measured": "MEASURED",
+  "centerEstimate": "Center estimate: {liters} L/day",
+  "@centerEstimate": {
+    "placeholders": {
+      "liters": { "type": "String" }
+    }
+  },
+  "confidenceLabel": "Confidence: {percent}%",
+  "@confidenceLabel": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "escutcheonMeasurements": "Escutcheon measurements",
+  "heightAb": "Height (A → B)",
+  "widthCd": "Width (C → D)",
+  "areaHw": "Area (H × W)",
+  "symmetryIndex": "Symmetry index",
+  "percentOfFrame": "{percent}% of frame",
+  "@percentOfFrame": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "percentBalanced": "{percent}% balanced",
+  "@percentBalanced": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "keyFeaturesExtracted": "Key features extracted",
+  "featureArea": "Area",
+  "featureSymmetry": "Symmetry",
+  "featureFullness": "Fullness",
+  "featureTexture": "Texture",
+  "aiCrossCheck": "AI cross-check: {liters} L/day ({match}% match)",
+  "@aiCrossCheck": {
+    "placeholders": {
+      "liters": { "type": "String" },
+      "match": { "type": "String" }
+    }
+  },
+  "dailyRevenue": "Daily revenue",
+  "monthlyRevenue": "Monthly revenue",
+  "milkMirrorFootnote": "* Pin bones (C/D) and udder (B) on photo — see overlay. Production scale 1–30 L/day from escutcheon + on-device AI.",
+  "proofRulesGate": "Rules gate",
+  "proofPinBones": "Pin bones detected",
+  "proofEscutcheon": "Escutcheon measured",
+  "proofTfliteRan": "TFLite ran",
+  "inferenceProof": "Inference proof",
+  "inferenceProofConsole": "Inference proof (see Debug Console)",
+  "proofSession": "Session",
+  "proofPredictedBy": "Predicted by",
+  "proofTfliteLoaded": "TFLite loaded",
+  "proofInterpreter": "Interpreter",
+  "proofInterpreterRun": "interpreter.run()",
+  "proofPass": "PASS",
+  "proofFail": "FAIL",
+  "proofMilkMirrorUi": "Milk Mirror (UI):",
+  "proofHeightAb": "Height A→B",
+  "proofWidthCd": "Width C→D",
+  "proofLitersMeasured": "Liters (measured)",
+  "proofTfliteClass": "TFLite class",
+  "proofAllClassScores": "All class scores:",
+  "badgeMilkMirrorMeasurement": "MILK MIRROR MEASUREMENT",
+  "badgeAiModelTflite": "AI MODEL (TFLite)",
+  "estimatedYield": "Estimated yield",
+  "dailyRevenueRow": "Daily Revenue",
+  "monthlyRevenueRow": "Monthly Revenue",
+  "engineLabel": "Engine: {engine}",
+  "@engineLabel": {
+    "placeholders": {
+      "engine": { "type": "String" }
+    }
+  },
+  "litersPerMonth": "{liters}L / Mo",
+  "@litersPerMonth": {
+    "placeholders": {
+      "liters": { "type": "String" }
+    }
+  },
+  "tfliteUntrainedWarning": "This TFLite file is not trained on your buffalo photos yet. The app always picks a class label, but 0% scores mean the model cannot distinguish 6–10 L bands. Train with training/train_model.py using images like your 10 L/day buffalo.",
+  "couldNotIdentifyBuffalo": "* Could not identify buffalo from this photo",
+  "localBuffaloDebug": "* Local buffalo — hybrid model with debug inputs above",
+  "localBuffaloPhoto": "* Local buffalo — estimate from photo only",
+  "badgeImageBasedModel": "IMAGE-BASED MODEL",
+  "visualAnalysisComplete": "Visual Analysis Complete",
+  "basedOnImageFeatures": "Based on image features",
+  "visualPrediction": "Visual Prediction",
+  "visualScore": "Visual Score",
+  "udderSize": "Udder size",
+  "bodyCondition": "Body condition",
+  "frameSize": "Frame size",
+  "buildScoreDebug": "Build score (debug)",
+  "imageBasedFootnote": "* Based on Visual AI Model (Image Analysis)",
+  "debugHybridInputs": "DEBUG — hybrid model inputs",
+  "localBuffaloOnly": "Local buffalo only ({type}). Hidden in production.",
+  "@localBuffaloOnly": {
+    "placeholders": {
+      "type": { "type": "String" }
+    }
+  },
+  "feedQuality": "Feed quality",
+  "feedHighProtein": "High Protein",
+  "feedStandard": "Standard",
+  "feedLow": "Low",
+  "ageYears": "Age (yrs)",
+  "lactationNumber": "Lactation #",
+  "daysInMilk": "Days in milk",
+  "labelNoBuffaloDetected": "No Buffalo Detected",
+  "labelAiModelNotLoaded": "AI Model Not Loaded",
+  "labelDetectionError": "Detection Error",
+  "labelPhotoNotSuitable": "Photo Not Suitable",
+  "speciesBuffalo": "Buffalo",
+  "speciesUnknown": "Unknown",
+  "speciesUncertain": "Uncertain",
+  "sexFemale": "Female",
+  "sexMale": "Male",
+  "lactationLactating": "Lactating",
+  "lactationDry": "Dry / not visible",
+  "healthNormal": "Normal",
+  "healthCheckAsymmetry": "Check asymmetry",
+  "healthPoorImageQuality": "Poor image quality",
+  "stageEarly": "Early (0–100 DIM)",
+  "stageMid": "Mid (100–200 DIM)",
+  "stageLate": "Late (>200 DIM)",
+  "stepCaptureImage": "Capture image",
+  "stepRearPhoto": "Rear milk-mirror photo",
+  "stepAnimalDetection": "Animal detection",
+  "stepAnimalDetected": "Animal detected",
+  "stepFailed": "Failed",
+  "stepSpecies": "Species",
+  "stepSexCheck": "Sex check",
+  "stepLactation": "Lactation",
+  "stepHealthScreen": "Health screen",
+  "stepYieldPredict": "Yield predict",
+  "alertBlockedDefault": "Prediction blocked — fix photo or animal",
+  "alertMaleBuffalo": "Male buffalo detected — milk yield prediction is for lactating females only",
+  "tipMaleBuffalo": "Use a rear photo of a lactating female with visible udder.",
+  "alertEscutcheonFailed": "Could not measure escutcheon — use rear udder view",
+  "tipEscutcheon": "Stand 3–5 ft behind, camera at udder height, full udder in frame.",
+  "alertCaution": "Prediction with caution — train TFLite or retake photo",
+  "tipCaution": "Use a clear rear udder photo; add more labeled training images for accuracy.",
+  "alertHighConfidence": "High-confidence milk mirror analysis",
+  "tipHighConfidence": "Maintain nutrition and monitor udder health weekly.",
+  "alertComplete": "Analysis complete — review measurements below",
+  "tipComplete": "Log DIM and parity in farmer inputs for better stage accuracy.",
+  "overlayLeftPin": "L Pin",
+  "overlayRightPin": "R Pin",
+  "overlayUdder": "Udder"
+}

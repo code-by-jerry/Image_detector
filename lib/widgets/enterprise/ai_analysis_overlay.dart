@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/dairy_pipeline_report.dart';
 import '../../theme/app_theme.dart';
 
@@ -17,12 +18,33 @@ class AiAnalysisOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final displaySteps = steps ??
-        const [
-          PipelineStep(index: 1, title: 'Capture', subtitle: 'Image loaded', status: PipelineStepStatus.pass),
-          PipelineStep(index: 2, title: 'Detect', subtitle: 'Animal scan', status: PipelineStepStatus.pass),
-          PipelineStep(index: 3, title: 'Measure', subtitle: 'Escutcheon', status: PipelineStepStatus.partial),
-          PipelineStep(index: 4, title: 'Predict', subtitle: 'TFLite', status: PipelineStepStatus.pending),
+        [
+          PipelineStep(
+            index: 1,
+            title: l10n.overlayStepCapture,
+            subtitle: l10n.overlayStepCaptureSub,
+            status: PipelineStepStatus.pass,
+          ),
+          PipelineStep(
+            index: 2,
+            title: l10n.overlayStepDetect,
+            subtitle: l10n.overlayStepDetectSub,
+            status: PipelineStepStatus.pass,
+          ),
+          PipelineStep(
+            index: 3,
+            title: l10n.overlayStepMeasure,
+            subtitle: l10n.overlayStepMeasureSub,
+            status: PipelineStepStatus.partial,
+          ),
+          PipelineStep(
+            index: 4,
+            title: l10n.overlayStepPredict,
+            subtitle: l10n.overlayStepPredictSub,
+            status: PipelineStepStatus.pending,
+          ),
         ];
 
     return Material(
@@ -46,16 +68,16 @@ class AiAnalysisOverlay extends StatelessWidget {
                 _scanRing(),
                 const SizedBox(height: 28),
                 Text(
-                  'AI Analysis in progress',
+                  l10n.overlayAiAnalysisTitle,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
                       ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Computer vision · Measurement · Prediction engine',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                Text(
+                  l10n.overlayAiAnalysisSubtitle,
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
                 ),
                 const SizedBox(height: 32),
                 Expanded(child: _pipelineList(displaySteps)),

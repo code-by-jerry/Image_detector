@@ -5,15 +5,20 @@ import 'dart:ui' as ui;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
 import 'firebase_options.dart';
+import 'l10n/app_localizations.dart';
+import 'l10n/l10n_extensions.dart';
+import 'l10n/report_localizer.dart';
 import 'models/dairy_pipeline_report.dart';
 import 'services/capture_firestore_service.dart';
 import 'services/classifier_service_new.dart';
 import 'services/image_based_milk_calculator.dart';
 import 'services/inference_logger.dart';
+import 'services/locale_service.dart';
 import 'services/milk_mirror_measurement_service.dart';
 import 'theme/app_theme.dart';
 import 'widgets/enterprise/ai_analysis_overlay.dart';
@@ -24,6 +29,7 @@ import 'widgets/enterprise/enterprise_measurement_card.dart';
 import 'widgets/enterprise/glass_card.dart';
 import 'widgets/enterprise/responsive_layout.dart';
 import 'widgets/anatomy_overlay_layer.dart';
+import 'widgets/language_selector.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,8 +52,31 @@ class ImageFitInfo {
 
 enum _CaptureFlowStage { capture, review, results }
 
-class ImageDetectorApp extends StatelessWidget {
+class ImageDetectorApp extends StatefulWidget {
   const ImageDetectorApp({super.key});
+
+  @override
+  State<ImageDetectorApp> createState() => _ImageDetectorAppState();
+}
+
+class _ImageDetectorAppState extends State<ImageDetectorApp> {
+  final _localeService = LocaleService();
+
+  @override
+  void initState() {
+    super.initState();
+    _localeService.loadSavedLocale();
+    _localeService.addListener(_onLocaleChanged);
+  }
+
+  void _onLocaleChanged() => setState(() {});
+
+  @override
+  void dispose() {
+    _localeService.removeListener(_onLocaleChanged);
+    _localeService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +84,23 @@ class ImageDetectorApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Milk Mirror',
       theme: AppTheme.build(),
-      home: const DetectorHomePage(),
+      locale: _localeService.locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: LocaleService.supportedLocales,
+      home: DetectorHomePage(localeService: _localeService),
     );
   }
 }
 
 class DetectorHomePage extends StatefulWidget {
-  const DetectorHomePage({super.key});
+  const DetectorHomePage({super.key, required this.localeService});
+
+  final LocaleService localeService;
 
   @override
   State<DetectorHomePage> createState() => _DetectorHomePageState();
@@ -100,21 +139,22 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     _prepareModel();
   }
 
-  String _engineLabel(String source) {
-    switch (source) {
-      case 'milk_mirror':
-        return 'Pin bones + escutcheon (A–B, C–D)';
-      case 'milk_mirror+tflite':
-        return 'Milk Mirror + AI';
-      case 'tflite':
-        return 'TFLite AI';
-      case 'tflite_untrained':
-        return 'TFLite (needs training)';
-      case 'rules_gate':
-        return 'Rules gate only';
-      default:
-        return source;
+  String _engineLabel(AppLocalizations l10n, String source) =>
+      ReportLocalizer(l10n).engineSource(source);
+
+  String _localizedPredictionLabel(AppLocalizations l10n, String label) =>
+      ReportLocalizer(l10n).text(label);
+
+  String _displayError(AppLocalizations l10n) {
+    final err = _error;
+    if (err == null) return '';
+    if (err == 'Analysis failed. Please try another photo.') {
+      return l10n.analysisFailed;
     }
+    if (err.contains('Camera is not supported on Windows')) {
+      return l10n.errorCameraWindows;
+    }
+    return err;
   }
 
   Future<void> _prepareModel() async {
@@ -188,7 +228,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
       debugPrint('LOG: Firestore capture id=$id');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Saved capture $id (camera/gallery → Firestore + Storage)'),
+          content: Text(context.l10n.savedCapture(id)),
           duration: const Duration(seconds: 4),
         ),
       );
@@ -197,7 +237,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Firestore save failed: $e'),
+          content: Text(context.l10n.firestoreSaveFailed('$e')),
           backgroundColor: Colors.red.shade800,
         ),
       );
@@ -356,6 +396,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       body: Stack(
         children: [
@@ -379,12 +420,22 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            EnterpriseAppHeader(
-                      modelReady: _isModelReady,
-                      subtitle: _isModelReady
-                          ? 'AI dairy analytics · rear udder capture'
-                          : 'Booting prediction engine…',
-                    ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: EnterpriseAppHeader(
+                                    modelReady: _isModelReady,
+                                    subtitle: _isModelReady
+                                        ? l10n.headerSubtitleReady
+                                        : l10n.headerSubtitleBooting,
+                                  ),
+                                ),
+                                LanguageSelector(
+                                  localeService: widget.localeService,
+                                ),
+                              ],
+                            ),
                 if (!_isModelReady && _modelLoadError != null) ...[
                   const SizedBox(height: 10),
                   Container(
@@ -407,20 +458,20 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                 ],
                     if (kDebugMode) ...[
                       const SizedBox(height: 12),
-                      _buildDebugProfileForm(),
+                      _buildDebugProfileForm(context),
                     ],
                             SizedBox(height: isWide ? 14 : 12),
-                            _buildFlowStepper(isWide),
+                            _buildFlowStepper(context, isWide),
                             SizedBox(height: isWide ? 16 : 12),
                             if (_flowStage == _CaptureFlowStage.capture) ...[
                               _buildCaptureSection(showOverlay: false),
                               SizedBox(height: isWide ? 16 : 14),
-                              _buildCaptureActions(isWide),
+                              _buildCaptureActions(context, isWide),
                             ],
                             if (_flowStage == _CaptureFlowStage.review) ...[
                               _buildCaptureSection(showOverlay: false),
                               SizedBox(height: isWide ? 14 : 12),
-                              _buildReviewPanel(isWide),
+                              _buildReviewPanel(context, isWide),
                             ],
                             if (_flowStage == _CaptureFlowStage.results) ...[
                               _buildCaptureSection(showOverlay: true),
@@ -428,7 +479,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                             ],
                     if (_error != null) ...[
                       Text(
-                        _error!,
+                        _displayError(l10n),
                         style: const TextStyle(color: AppColors.danger),
                       ),
                       const SizedBox(height: 12),
@@ -444,23 +495,26 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                         const SizedBox(height: 12),
                         EnterpriseMeasurementCard(
                           metrics: _prediction!.milkMirror!,
-                          engineLabel: _engineLabel(_prediction!.predictionSource),
+                          engineLabel: _engineLabel(
+                            l10n,
+                            _prediction!.predictionSource,
+                          ),
                         ),
                       ] else if (_prediction!.pipeline == null) ...[
                         const SizedBox(height: 12),
-                        _buildOriginalModelCard(_prediction!),
+                        _buildOriginalModelCard(context, _prediction!),
                       ],
                       if (_prediction!.diagnostics != null) ...[
                         const SizedBox(height: 12),
-                        _buildDiagnosticsExpansion(_prediction!.diagnostics!),
+                        _buildDiagnosticsExpansion(context, _prediction!.diagnostics!),
                       ],
                       const SizedBox(height: 12),
-                      _buildResultsActions(isWide),
+                      _buildResultsActions(context, isWide),
                     ],
                     if (kDebugMode &&
                         _flowStage == _CaptureFlowStage.results &&
                         _imageBasedResult != null) ...[
-                      _buildImageBasedModelCard(_imageBasedResult!),
+                      _buildImageBasedModelCard(context, _imageBasedResult!),
                       const SizedBox(height: 18),
                     ],
                           ],
@@ -481,17 +535,18 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildFlowStepper(bool isWide) {
+  Widget _buildFlowStepper(BuildContext context, bool isWide) {
+    final l10n = context.l10n;
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       radius: 16,
       child: Row(
         children: [
-          _flowStepChip(1, 'Capture', _flowStage == _CaptureFlowStage.capture),
+          _flowStepChip(1, l10n.flowCapture, _flowStage == _CaptureFlowStage.capture),
           _flowConnector(),
-          _flowStepChip(2, 'Review', _flowStage == _CaptureFlowStage.review),
+          _flowStepChip(2, l10n.flowReview, _flowStage == _CaptureFlowStage.review),
           _flowConnector(),
-          _flowStepChip(3, 'Results', _flowStage == _CaptureFlowStage.results),
+          _flowStepChip(3, l10n.flowResults, _flowStage == _CaptureFlowStage.results),
         ],
       ),
     );
@@ -540,7 +595,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildProceedButton() {
+  Widget _buildProceedButton(BuildContext context) {
+    final l10n = context.l10n;
     final ready = _animalIsHealthy != null && _isModelReady;
     return FilledButton.icon(
       onPressed: ready && !_isLoading ? _onProceedTapped : null,
@@ -561,40 +617,41 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
               ),
             )
           : const Icon(Icons.arrow_forward_rounded),
-      label: Text(_isLoading ? 'Analyzing…' : 'Proceed'),
+      label: Text(_isLoading ? l10n.analyzing : l10n.proceed),
     );
   }
 
-  Widget _buildReviewPanel(bool isWide) {
+  Widget _buildReviewPanel(BuildContext context, bool isWide) {
+    final l10n = context.l10n;
     return GlassCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Uploaded photo',
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          Text(
+            l10n.uploadedPhoto,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Confirm animal health, then proceed to AI analysis.',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          Text(
+            l10n.reviewInstructions,
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Animal health',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          Text(
+            l10n.animalHealth,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
           ),
           const SizedBox(height: 8),
           _healthCheckbox(
-            label: 'Healthy',
-            subtitle: 'Normal condition, fit for milking assessment',
+            label: l10n.healthy,
+            subtitle: l10n.healthySubtitle,
             selected: _animalIsHealthy == true,
             onSelect: () => setState(() => _animalIsHealthy = true),
           ),
           const SizedBox(height: 6),
           _healthCheckbox(
-            label: 'Not healthy',
-            subtitle: 'Visible illness, injury, or poor condition',
+            label: l10n.notHealthy,
+            subtitle: l10n.notHealthySubtitle,
             selected: _animalIsHealthy == false,
             onSelect: () => setState(() => _animalIsHealthy = false),
           ),
@@ -606,23 +663,23 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                   child: OutlinedButton.icon(
                     onPressed: _isLoading ? null : _resetToCapture,
                     icon: const Icon(Icons.arrow_back_rounded),
-                    label: const Text('Change photo'),
+                    label: Text(l10n.changePhoto),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 2,
-                  child: _buildProceedButton(),
+                  child: _buildProceedButton(context),
                 ),
               ],
             )
           else ...[
-            _buildProceedButton(),
+            _buildProceedButton(context),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: _isLoading ? null : _resetToCapture,
               icon: const Icon(Icons.arrow_back_rounded),
-              label: const Text('Change photo'),
+              label: Text(l10n.changePhoto),
             ),
           ],
         ],
@@ -691,7 +748,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildResultsActions(bool isWide) {
+  Widget _buildResultsActions(BuildContext context, bool isWide) {
+    final l10n = context.l10n;
     if (isWide) {
       return Row(
         children: [
@@ -699,7 +757,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
             child: OutlinedButton.icon(
               onPressed: _isLoading ? null : _backToReview,
               icon: const Icon(Icons.edit_note_rounded),
-              label: const Text('Edit health & retry'),
+              label: Text(l10n.editHealthRetry),
             ),
           ),
           const SizedBox(width: 12),
@@ -707,7 +765,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
             child: FilledButton.icon(
               onPressed: _isLoading ? null : _resetToCapture,
               icon: const Icon(Icons.add_a_photo_rounded),
-              label: const Text('New photo'),
+              label: Text(l10n.newPhoto),
             ),
           ),
         ],
@@ -719,32 +777,33 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
         OutlinedButton.icon(
           onPressed: _isLoading ? null : _backToReview,
           icon: const Icon(Icons.edit_note_rounded),
-          label: const Text('Edit health & retry'),
+          label: Text(l10n.editHealthRetry),
         ),
         const SizedBox(height: 10),
         FilledButton.icon(
           onPressed: _isLoading ? null : _resetToCapture,
           icon: const Icon(Icons.add_a_photo_rounded),
-          label: const Text('New photo'),
+          label: Text(l10n.newPhoto),
         ),
       ],
     );
   }
 
-  Widget _buildCaptureActions(bool isWide) {
+  Widget _buildCaptureActions(BuildContext context, bool isWide) {
+    final l10n = context.l10n;
     final camera = FilledButton.icon(
       onPressed: _isLoading || !_isModelReady
           ? null
           : () => _pickImage(ImageSource.camera),
       icon: const Icon(Icons.camera_alt_rounded),
-      label: const Text('Camera'),
+      label: Text(l10n.camera),
     );
     final gallery = OutlinedButton.icon(
       onPressed: _isLoading || !_isModelReady
           ? null
           : () => _pickImage(ImageSource.gallery),
       icon: const Icon(Icons.photo_library_rounded),
-      label: const Text('Gallery'),
+      label: Text(l10n.gallery),
     );
 
     if (isWide) {
@@ -785,7 +844,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildDiagnosticsExpansion(InferenceDiagnostics d) {
+  Widget _buildDiagnosticsExpansion(BuildContext context, InferenceDiagnostics d) {
+    final l10n = context.l10n;
     return GlassCard(
       padding: EdgeInsets.zero,
       radius: 20,
@@ -793,9 +853,9 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           tilePadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
-          title: const Text(
-            'Inference proof',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          title: Text(
+            l10n.inferenceProof,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
           ),
           subtitle: Text(
             d.proofSummary,
@@ -806,7 +866,11 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
-              child: _buildInferenceProofCard(d, milkMirror: _prediction?.milkMirror),
+              child: _buildInferenceProofCard(
+                context,
+                d,
+                milkMirror: _prediction?.milkMirror,
+              ),
             ),
           ],
         ),
@@ -832,7 +896,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildDebugProfileForm() {
+  Widget _buildDebugProfileForm(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -848,7 +913,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
               Icon(Icons.bug_report, size: 16, color: Colors.orange.shade800),
               const SizedBox(width: 6),
               Text(
-                'DEBUG — hybrid model inputs',
+                l10n.debugHybridInputs,
                 style: TextStyle(
                   color: Colors.orange.shade900,
                   fontSize: 12,
@@ -860,29 +925,47 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Local buffalo only ($_localBuffaloType). Hidden in production.',
+            l10n.localBuffaloOnly(_localBuffaloType),
             style: const TextStyle(color: Color(0xFF9A3412), fontSize: 11),
           ),
           const SizedBox(height: 12),
           _buildDropdown(
-            'Feed quality',
+            l10n.feedQuality,
             _selectedFeed,
-            ['High Protein', 'Standard', 'Low'],
+            const ['High Protein', 'Standard', 'Low'],
             (val) => setState(() => _selectedFeed = val!),
+            displayLabel: (v) => switch (v) {
+              'High Protein' => l10n.feedHighProtein,
+              'Standard' => l10n.feedStandard,
+              'Low' => l10n.feedLow,
+              _ => v,
+            },
           ),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: _buildNumberInput('Age (yrs)', _age, (val) => setState(() => _age = val)),
+                child: _buildNumberInput(
+                  l10n.ageYears,
+                  _age,
+                  (val) => setState(() => _age = val),
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildNumberInput('Lactation #', _lactation, (val) => setState(() => _lactation = val)),
+                child: _buildNumberInput(
+                  l10n.lactationNumber,
+                  _lactation,
+                  (val) => setState(() => _lactation = val),
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildNumberInput('Days in milk', _daysInMilk, (val) => setState(() => _daysInMilk = val)),
+                child: _buildNumberInput(
+                  l10n.daysInMilk,
+                  _daysInMilk,
+                  (val) => setState(() => _daysInMilk = val),
+                ),
               ),
             ],
           ),
@@ -891,7 +974,13 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildDropdown(String label, String value, List<String> items, ValueChanged<String?> onChanged) {
+  Widget _buildDropdown(
+    String label,
+    String value,
+    List<String> items,
+    ValueChanged<String?> onChanged, {
+    String Function(String value)? displayLabel,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -908,7 +997,14 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
             border: OutlineInputBorder(),
           ),
           dropdownColor: const Color(0xFFFFFFFF),
-          items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          items: items
+              .map(
+                (e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(displayLabel?.call(e) ?? e),
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -1038,6 +1134,9 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
               painter: AnatomicalPainter(
                 keypoints: _prediction!.keypoints,
                 milkMirror: _prediction!.milkMirror,
+                leftPinLabel: context.l10n.overlayLeftPin,
+                rightPinLabel: context.l10n.overlayRightPin,
+                udderLabel: context.l10n.overlayUdder,
               ),
             ),
           ),
@@ -1108,7 +1207,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
   }
 
   // ignore: unused_element
-  Widget _buildMilkMirrorAnalysisCard(PredictionResult prediction) {
+  Widget _buildMilkMirrorAnalysisCard(BuildContext context, PredictionResult prediction) {
+    final l10n = context.l10n;
     final m = prediction.milkMirror!;
     final liters = prediction.estimatedLiters;
 
@@ -1149,16 +1249,18 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Milk Mirror Analysis',
-                      style: TextStyle(
+                    Text(
+                      l10n.milkMirrorAnalysis,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF065F46),
                       ),
                     ),
                     Text(
-                      'AI-powered dairy insights · ${_engineLabel(prediction.predictionSource)}',
+                      l10n.engineLabel(
+                        _engineLabel(l10n, prediction.predictionSource),
+                      ),
                       style: const TextStyle(fontSize: 11, color: Color(0xFF6B7280)),
                     ),
                   ],
@@ -1170,9 +1272,9 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                   color: const Color(0xFF10B981).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
-                  'MEASURED',
-                  style: TextStyle(
+                child: Text(
+                  l10n.measured,
+                  style: const TextStyle(
                     color: Color(0xFF047857),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -1385,9 +1487,11 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
   }
 
   Widget _buildInferenceProofCard(
+    BuildContext context,
     InferenceDiagnostics diag, {
     MilkMirrorUiMetrics? milkMirror,
   }) {
+    final l10n = context.l10n;
     final ran = diag.tfliteInferenceExecuted;
     return Container(
       width: double.infinity,
@@ -1408,9 +1512,9 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                 color: ran ? const Color(0xFF15803D) : const Color(0xFF9A3412),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'Inference proof (see Debug Console)',
-                style: TextStyle(
+              Text(
+                l10n.inferenceProofConsole,
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
                   color: Color(0xFF14532D),
@@ -1419,30 +1523,33 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
             ],
           ),
           const SizedBox(height: 8),
-          _proofRow('Session', diag.sessionId),
-          _proofRow('Predicted by', diag.predictionSource.toUpperCase()),
-          _proofRow('TFLite loaded', '${diag.tfliteModelLoaded}'),
-          _proofRow('Interpreter', '${diag.tfliteInterpreterAllocated}'),
-          _proofRow('interpreter.run()', '${diag.tfliteInferenceExecuted}'),
-          _proofRow('Rules gate', diag.rulesGatePassed ? 'PASS' : 'FAIL'),
+          _proofRow(l10n.proofSession, diag.sessionId),
+          _proofRow(l10n.proofPredictedBy, diag.predictionSource.toUpperCase()),
+          _proofRow(l10n.proofTfliteLoaded, '${diag.tfliteModelLoaded}'),
+          _proofRow(l10n.proofInterpreter, '${diag.tfliteInterpreterAllocated}'),
+          _proofRow(l10n.proofInterpreterRun, '${diag.tfliteInferenceExecuted}'),
+          _proofRow(
+            l10n.proofRulesGate,
+            diag.rulesGatePassed ? l10n.proofPass : l10n.proofFail,
+          ),
           if (milkMirror != null) ...[
             const SizedBox(height: 6),
-            const Text(
-              'Milk Mirror (UI):',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF14532D)),
+            Text(
+              l10n.proofMilkMirrorUi,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF14532D)),
             ),
-            _proofRow('Height A→B', '${(milkMirror.heightNorm * 100).toStringAsFixed(1)}%'),
-            _proofRow('Width C→D', '${(milkMirror.widthNorm * 100).toStringAsFixed(1)}%'),
-            _proofRow('Area', '${(milkMirror.areaNorm * 100).toStringAsFixed(1)}%'),
-            _proofRow('Liters (measured)', milkMirror.litersPerDay.toStringAsFixed(1)),
+            _proofRow(l10n.proofHeightAb, '${(milkMirror.heightNorm * 100).toStringAsFixed(1)}%'),
+            _proofRow(l10n.proofWidthCd, '${(milkMirror.widthNorm * 100).toStringAsFixed(1)}%'),
+            _proofRow(l10n.metricArea, '${(milkMirror.areaNorm * 100).toStringAsFixed(1)}%'),
+            _proofRow(l10n.proofLitersMeasured, milkMirror.litersPerDay.toStringAsFixed(1)),
           ],
           if (diag.rawTfliteLabel.isNotEmpty)
-            _proofRow('TFLite class', diag.rawTfliteLabel),
+            _proofRow(l10n.proofTfliteClass, diag.rawTfliteLabel),
           if (diag.tfliteAllScores.isNotEmpty) ...[
             const SizedBox(height: 6),
-            const Text(
-              'All class scores:',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+            Text(
+              l10n.proofAllClassScores,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
             ),
             ...diag.tfliteAllScores.entries.map(
               (e) => Text(
@@ -1466,14 +1573,15 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildOriginalModelCard(PredictionResult prediction) {
+  Widget _buildOriginalModelCard(BuildContext context, PredictionResult prediction) {
+    final l10n = context.l10n;
     final isInvalid = prediction.label == 'No Buffalo Detected' ||
         prediction.label == 'AI Model Not Loaded' ||
         prediction.label == 'Detection Error';
     final isUntrainedTflite = !isInvalid &&
         prediction.predictionSource == 'tflite' &&
         prediction.confidence < 0.25;
-    double liters = prediction.estimatedLiters;
+    final liters = prediction.estimatedLiters;
     
     return Container(
       width: double.infinity,
@@ -1522,8 +1630,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                 ),
                 child: Text(
                   prediction.predictionSource.startsWith('milk_mirror')
-                      ? 'MILK MIRROR MEASUREMENT'
-                      : 'AI MODEL (TFLite)',
+                      ? l10n.badgeMilkMirrorMeasurement
+                      : l10n.badgeAiModelTflite,
                   style: const TextStyle(
                     color: Color(0xFF6D5EF7),
                     fontSize: 10,
@@ -1537,7 +1645,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      prediction.label,
+                      _localizedPredictionLabel(l10n, prediction.label),
                       style: TextStyle(
                         color: isInvalid ? Colors.redAccent : const Color(0xFF111827),
                         fontSize: 18,
@@ -1546,7 +1654,9 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                     ),
                     if (!isInvalid) ...[
                       Text(
-                        'Confidence: ${(prediction.confidence * 100).toStringAsFixed(1)}%',
+                        l10n.confidenceLabel(
+                          (prediction.confidence * 100).toStringAsFixed(1),
+                        ),
                         style: TextStyle(
                           color: prediction.confidence > 0.8 ? Colors.greenAccent : Colors.orangeAccent,
                           fontSize: 12,
@@ -1554,7 +1664,9 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                         ),
                       ),
                       Text(
-                        'Engine: ${_engineLabel(prediction.predictionSource)}',
+                        l10n.engineLabel(
+                          _engineLabel(l10n, prediction.predictionSource),
+                        ),
                         style: const TextStyle(
                           color: Color(0xFF6B7280),
                           fontSize: 11,
@@ -1573,7 +1685,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                     border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.3)),
                   ),
                   child: Text(
-                    '${(liters * 30).toStringAsFixed(0)}L / Mo',
+                    l10n.litersPerMonth((liters * 30).toStringAsFixed(0)),
                     style: const TextStyle(
                       color: Colors.greenAccent,
                       fontWeight: FontWeight.bold,
@@ -1593,12 +1705,9 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: const Color(0xFFFDBA74)),
               ),
-              child: const Text(
-                'This TFLite file is not trained on your buffalo photos yet. '
-                'The app always picks a class label, but 0% scores mean the model '
-                'cannot distinguish 6–10 L bands. Train with training/train_model.py '
-                'using images like your 10 L/day buffalo.',
-                style: TextStyle(color: Color(0xFF9A3412), fontSize: 12, height: 1.4),
+              child: Text(
+                l10n.tfliteUntrainedWarning,
+                style: const TextStyle(color: Color(0xFF9A3412), fontSize: 12, height: 1.4),
               ),
             ),
           ],
@@ -1620,23 +1729,35 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
               ),
               child: Column(
                 children: [
-                  _buildModernCalculationRow('Estimated yield', '${liters.toStringAsFixed(1)} L/day', Icons.opacity),
+                  _buildModernCalculationRow(
+                    l10n.estimatedYield,
+                    '${liters.toStringAsFixed(1)} L/day',
+                    Icons.opacity,
+                  ),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Divider(color: Color(0xFFE5E7EB), height: 1),
                   ),
-                  _buildModernCalculationRow('Daily Revenue', '₹${(liters * 60).toStringAsFixed(0)}', Icons.payments_outlined),
-                  _buildModernCalculationRow('Monthly Revenue', '₹${(liters * 30 * 60).toStringAsFixed(0)}', Icons.account_balance_wallet_outlined),
+                  _buildModernCalculationRow(
+                    l10n.dailyRevenueRow,
+                    '₹${(liters * 60).toStringAsFixed(0)}',
+                    Icons.payments_outlined,
+                  ),
+                  _buildModernCalculationRow(
+                    l10n.monthlyRevenueRow,
+                    '₹${(liters * 30 * 60).toStringAsFixed(0)}',
+                    Icons.account_balance_wallet_outlined,
+                  ),
                 ],
               ),
             ),
           const SizedBox(height: 12),
           Text(
             isInvalid
-                ? '* Could not identify buffalo from this photo'
+                ? l10n.couldNotIdentifyBuffalo
                 : kDebugMode
-                    ? '* Local buffalo — hybrid model with debug inputs above'
-                    : '* Local buffalo — estimate from photo only',
+                    ? l10n.localBuffaloDebug
+                    : l10n.localBuffaloPhoto,
             style: TextStyle(
               color: const Color(0xFF6B7280),
               fontSize: 10,
@@ -1648,7 +1769,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildImageBasedModelCard(Map<String, dynamic> result) {
+  Widget _buildImageBasedModelCard(BuildContext context, Map<String, dynamic> result) {
+    final l10n = context.l10n;
     final milk = result['milk_per_day_liters'] as double;
     final confidence = result['confidence'] as double;
     final analysis = result['analysis'] as Map<String, dynamic>;
@@ -1696,8 +1818,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                   color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
-                  'IMAGE-BASED MODEL',
+                child: Text(
+                  l10n.badgeImageBasedModel,
                   style: TextStyle(
                     color: Color(0xFF4CAF50),
                     fontSize: 10,
@@ -1710,8 +1832,8 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Visual Analysis Complete',
+                    Text(
+                      l10n.visualAnalysisComplete,
                       style: TextStyle(
                         color: Color(0xFF111827),
                         fontSize: 18,
@@ -1719,9 +1841,9 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                       ),
                     ),
                     Text(
-                      'Based on image features',
+                      l10n.basedOnImageFeatures,
                       style: TextStyle(
-                        color: const Color(0xFF6B7280),
+                        color: Color(0xFF6B7280),
                         fontSize: 12,
                       ),
                     ),
@@ -1740,18 +1862,38 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
             ),
             child: Column(
               children: [
-                _buildModernCalculationRow('Visual Prediction', '${milk.toStringAsFixed(1)} Liters', Icons.visibility),
+                _buildModernCalculationRow(
+                  l10n.visualPrediction,
+                  '${milk.toStringAsFixed(1)} Liters',
+                  Icons.visibility,
+                ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Divider(color: Color(0xFFE5E7EB), height: 1),
                 ),
-                _buildModernCalculationRow('Visual Score', '${(confidence * 100).toStringAsFixed(1)}%', Icons.remove_red_eye),
-                _buildModernCalculationRow('Udder size', '${analysis['udder_size']}', Icons.pets),
-                _buildModernCalculationRow('Body condition', '${analysis['body_condition']}', Icons.fitness_center),
-                _buildModernCalculationRow('Frame size', '${analysis['size_category']}', Icons.straighten),
+                _buildModernCalculationRow(
+                  l10n.visualScore,
+                  '${(confidence * 100).toStringAsFixed(1)}%',
+                  Icons.remove_red_eye,
+                ),
+                _buildModernCalculationRow(
+                  l10n.udderSize,
+                  '${analysis['udder_size']}',
+                  Icons.pets,
+                ),
+                _buildModernCalculationRow(
+                  l10n.bodyCondition,
+                  '${analysis['body_condition']}',
+                  Icons.fitness_center,
+                ),
+                _buildModernCalculationRow(
+                  l10n.frameSize,
+                  '${analysis['size_category']}',
+                  Icons.straighten,
+                ),
                 if (kDebugMode)
                   _buildModernCalculationRow(
-                    'Build score (debug)',
+                    l10n.buildScoreDebug,
                     ((analysis['build_score'] as num?) ?? 0).toStringAsFixed(2),
                     Icons.bug_report,
                   ),
@@ -1760,7 +1902,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
           ),
           const SizedBox(height: 12),
           Text(
-            '* Based on Visual AI Model (Image Analysis)',
+            l10n.imageBasedFootnote,
             style: TextStyle(
               color: const Color(0xFF6B7280),
               fontSize: 10,
@@ -1798,8 +1940,17 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
 class AnatomicalPainter extends CustomPainter {
   final List<Offset> keypoints;
   final MilkMirrorUiMetrics? milkMirror;
+  final String leftPinLabel;
+  final String rightPinLabel;
+  final String udderLabel;
 
-  AnatomicalPainter({required this.keypoints, this.milkMirror});
+  AnatomicalPainter({
+    required this.keypoints,
+    this.milkMirror,
+    this.leftPinLabel = 'L Pin',
+    this.rightPinLabel = 'R Pin',
+    this.udderLabel = 'Udder',
+  });
 
   Offset _pt(Offset n, Size size) => Offset(n.dx * size.width, n.dy * size.height);
 
@@ -1862,9 +2013,9 @@ class AnatomicalPainter extends CustomPainter {
       {'point': pointB, 'label': 'B', 'color': const Color(0xFFFFD54F)},
       {'point': pointC, 'label': 'C', 'color': const Color(0xFFFFD54F)},
       {'point': pointD, 'label': 'D', 'color': const Color(0xFFFFD54F)},
-      {'point': leftPin, 'label': 'L Pin', 'color': Colors.redAccent},
-      {'point': rightPin, 'label': 'R Pin', 'color': Colors.redAccent},
-      {'point': udder, 'label': 'Udder', 'color': Colors.blueAccent},
+      {'point': leftPin, 'label': leftPinLabel, 'color': Colors.redAccent},
+      {'point': rightPin, 'label': rightPinLabel, 'color': Colors.redAccent},
+      {'point': udder, 'label': udderLabel, 'color': Colors.blueAccent},
     ];
 
     for (var item in anatomicalPoints) {

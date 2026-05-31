@@ -1,5 +1,8 @@
 /// Thresholds for continuous learning (Firestore + local retrain pipeline).
 abstract final class ContinuousLearningConfig {
+  /// Firestore-only mode: disable Firebase Storage writes/downloads.
+  static const bool useFirebaseStorage = false;
+
   /// Minimum 0–1 quality score to mirror into training collection.
   static const double minTrainingQualityScore = 0.55;
 

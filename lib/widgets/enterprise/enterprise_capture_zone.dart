@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import 'dairy_ai_showcase_carousel.dart';
 import 'glass_card.dart';
@@ -91,6 +92,7 @@ class EnterpriseCaptureZone extends StatelessWidget {
   }
 
   Widget _captureHint(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final compact = ResponsiveLayout.tier(context) == ScreenTier.compact;
 
     return Material(
@@ -120,7 +122,7 @@ class EnterpriseCaptureZone extends StatelessWidget {
             SizedBox(width: compact ? 4 : 5),
             Flexible(
               child: Text(
-                modelReady ? 'AI ready · Camera / Gallery' : 'Loading AI…',
+                modelReady ? l10n.captureHintReady : l10n.captureHintLoading,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.95),
                   fontSize: compact ? 9.5 : 10.5,
