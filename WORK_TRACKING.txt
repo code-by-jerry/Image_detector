@@ -1,0 +1,476 @@
+================================================================================
+MILK MIRROR — PROJECT WORK TRACKING
+================================================================================
+Project: Image_detector (Milk Mirror — AI Dairy Analytics)
+Last updated: 2026-05-30
+Repository: C:\Users\vinod\Image_detector
+Primary branch: main (live / stable)
+Deployment branch: deployment (deploy prep, isolated from live)
+
+================================================================================
+1. PROJECT SUMMARY
+================================================================================
+
+Milk Mirror is a Flutter app that analyzes rear udder photos of buffalo to
+estimate daily milk production (1–30 L/day). The pipeline combines:
+
+  - Rules-based veterinary gate (reject humans, laptops, non-livestock)
+  - Milk Mirror geometric measurement (pin bones + escutcheon)
+  - On-device TFLite band classifier (6_lit … 10_lit)
+  - Optional scientific udder trait extraction (9-stage pipeline)
+  - Firebase Firestore for capture metadata and continuous learning
+  - Python training scripts for model retrain and export
+
+Current runtime mode: Firestore-only (Firebase Storage disabled).
+
+================================================================================
+2. BRANCH & DEPLOYMENT STATUS
+================================================================================
+
+COMPLETED
+---------
+[✓] Created `deployment` branch from `main` to isolate deploy work from live app
+[✓] Verified `deployment` and `main` were identical at branch creation time
+[✓] Resolved git push rejections (pull --rebase origin main before push)
+[✓] Merged pull requests #2 and #3 from roza654/main into main
+[✓] Current git state synced with remote after rebase/conflict resolution
+
+PENDING / FUTURE
+----------------
+[ ] Push `deployment` branch to remote: git push -u origin deployment
+[ ] Move deployment-only commits off `main` if needed (cherry-pick workflow)
+[ ] Production release build (Android APK/AAB, iOS if applicable)
+[ ] Document branch strategy in README (main = live, deployment = prep)
+
+================================================================================
+3. COMPLETED TASKS — CORE APPLICATION
+================================================================================
+
+3.1 User Experience & UI
+------------------------
+[✓] 3-stage user flow: Capture → Review → Results
+    File: lib/main.dart
+
+[✓] Enterprise purple SaaS theme and glass-card dashboard
+    Files: lib/theme/app_theme.dart, lib/widgets/enterprise/*
+
+[✓] SVG showcase carousel on empty capture state
+    Files: dairy_ai_showcase_carousel.dart, dairy_showcase_svgs.dart
+
+[✓] Anatomy overlay on results (pin bones, escutcheon landmarks)
+    Files: lib/widgets/anatomy_overlay_layer.dart, anatomy_overlay_painter.dart
+
+[✓] Single production milk figure display (1–30 L clamp, no class prob bars)
+    Files: enterprise_ai_dashboard.dart, milk_production_scale.dart
+
+[✓] Fixed deprecated DropdownButtonFormField `.value` → `.initialValue`
+    File: lib/main.dart
+
+[✓] Removed dead UI code (hidden Focus Frame block)
+    File: lib/main.dart
+
+3.2 Inference Pipeline
+----------------------
+[✓] Rules gate: reject humans, selfies, laptops, phones, non-farm scenes
+    File: lib/services/classifier_service_new.dart (VeterinaryBuffaloDetector)
+
+[✓] Anatomy fast-path no longer skips human/device checks
+    File: lib/services/classifier_service_new.dart
+
+[✓] Template anatomy excluded from fast-path bypass
+    File: lib/services/rear_anatomy_detector.dart (isTemplateFallback)
+
+[✓] Milk Mirror measurement service (pin bones, escutcheon A–D, liters)
+    File: lib/services/milk_mirror_measurement_service.dart
+
+[✓] TFLite 5-class band classifier on 224×224 input
+    File: lib/services/tflite_classifier_service.dart
+
+[✓] Yield fusion between Milk Mirror and TFLite
+    File: lib/services/yield_fusion_service.dart (referenced in pipeline)
+
+[✓] Dairy pipeline report builder for results dashboard
+    File: lib/services/dairy_pipeline_builder.dart
+
+[✓] Inference debug logging (🔬 banner logs)
+    File: lib/services/inference_logger.dart
+
+[✓] Fixed "prediction gone" issue — pre-validation gate no longer short-circuits
+    full pipeline with early `pipeline_gate` / "Photo Not Suitable" exit
+    File: lib/services/classifier_service_new.dart
+    Problem: validatePreMilk() returned early, skipping rules gate + TFLite
+    Solution: Log warning on pre-check fail but continue full classify flow
+
+3.3 Multi-Stage AI Pipeline
+---------------------------
+[✓] 5-stage validation architecture implemented
+    Docs: docs/MULTI_STAGE_PIPELINE.md
+    Stages: Quality → Animal → Angle → Rear Udder → Milk Prediction
+
+[✓] AiPipelineOrchestrator for pre-milk validation
+    File: lib/services/ai_pipeline_orchestrator.dart
+
+[✓] Image quality validator (blur, dark, exposure, noise, resolution)
+    File: lib/services/image_quality_validator.dart
+
+[✓] Animal and angle validation services
+    Files: animal_validation_service.dart, angle_validation_service.dart
+
+[✓] Rear udder detection service (heuristic backend, YOLO-ready)
+    File: lib/services/rear_udder_detection_service.dart
+
+3.4 Scientific Udder Trait Extraction
+-------------------------------------
+[✓] 9-stage scientific udder pipeline (stages 0–9)
+    Directory: lib/services/scientific_udder/
+    Docs: docs/SCIENTIFIC_UDDER_IMPLEMENTATION.md
+
+[✓] Feature flag: ScientificUdderConfig.enabled (default true)
+    File: lib/config/scientific_udder_config.dart
+
+[✓] Optional blend into classifier result + Firestore persistence
+    Files: classifier_service_new.dart, capture_firestore_service.dart
+
+[✓] Unit tests for confidence scoring and trait regression
+    File: test/scientific_udder_trait_test.dart
+
+3.5 Firebase & Continuous Learning
+----------------------------------
+[✓] Firestore capture draft, review, and analysis completion
+    File: lib/services/capture_firestore_service.dart
+
+[✓] Training sample mirroring to training_assets collection
+    File: lib/services/capture_firestore_service.dart
+
+[✓] pendingTrainingCount increment on validated captures
+    Firestore doc: ml_pipeline/state
+
+[✓] ModelUpdateService for remote model download (when Storage enabled)
+    File: lib/services/model_update_service.dart
+
+[✓] Switched to Firestore-only mode (Storage disabled)
+    File: lib/config/continuous_learning_config.dart
+    Flag: useFirebaseStorage = false
+
+[✓] ClassifierService uses bundled assets when Storage disabled
+    File: lib/services/classifier_service_new.dart
+
+[✓] Removed Firebase Storage upload from capture flow
+    File: lib/services/capture_firestore_service.dart
+    Problem: object-not-found / no-bucket errors at runtime
+    Solution: storageUrl set to null; _uploadOriginal removed
+
+[✓] Admin training app entry point (separate from main app)
+    File: lib/admin/main_admin.dart
+
+3.6 Android / Platform
+----------------------
+[✓] Android release ProGuard rules for TFLite / R8
+    File: android/app/proguard-rules.pro
+
+[✓] Windows: gallery-only (camera picker disabled on desktop)
+    Documented in README Build notes
+
+[✓] Windows build cache recovery after Firebase C++ SDK ZIP failure
+    Steps: flutter clean, remove build/.dart_tool, flutter pub get, precache
+
+================================================================================
+4. COMPLETED TASKS — CI/CD & TESTING
+================================================================================
+
+4.1 GitHub Actions
+------------------
+[✓] Renamed workflow from "Dart" to "Flutter CI"
+    File: .github/workflows/dart.yml
+
+[✓] Replaced dart pub/analyze/test with flutter pub get/analyze/test
+    File: .github/workflows/dart.yml
+    Problem: firebase_core_platform_interface requires Flutter SDK
+
+[✓] Updated actions/checkout v4 → v5 for Node.js 24 compatibility
+    File: .github/workflows/dart.yml
+
+[✓] Added FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true env variable
+    File: .github/workflows/dart.yml
+
+[✓] flutter analyze --no-fatal-warnings --no-fatal-infos (CI stability)
+    File: .github/workflows/dart.yml
+
+4.2 Tests
+---------
+[✓] Rules gate unit tests (buffalo pass, human/laptop reject)
+    File: test/buffalo_gate_test.dart
+    Fixture: test/fixtures/user_laptop.png
+
+[✓] TFLite pipeline smoke test (model load + classify end-to-end)
+    File: test/tflite_pipeline_smoke_test.dart
+
+[✓] CI skip guards for environment-sensitive tests
+    Files: test/buffalo_gate_test.dart, test/tflite_pipeline_smoke_test.dart,
+           test/widget_test.dart
+    Reason: Heuristic gates and Firebase bootstrap differ on CI Linux runners
+
+[✓] Capture Firestore training label mapping tests
+    File: test/capture_firestore_test.dart
+
+[✓] Milk production scale, rear anatomy, udder crop, yield fusion tests
+    Files: test/milk_production_scale_test.dart, test/rear_anatomy_test.dart,
+           test/udder_crop_test.dart, test/yield_fusion_test.dart
+
+4.3 Code Quality / Lint Cleanup
+-------------------------------
+[✓] Removed unused imports and variables
+    Files: milk_mirror_measurement_service.dart, stage3_pose_estimation.dart,
+           stage5_udder_segmentation.dart, scientific_udder_trait_test.dart
+
+[✓] Fixed unnecessary_null_comparison, curly_braces, use_null_aware_elements
+    Files: classifier_service_new.dart, capture_firestore_service.dart
+
+[✓] Fixed unnecessary_underscores in ai_analysis_overlay.dart
+
+[✓] Added .gitattributes for LF line endings on Windows
+    File: .gitattributes
+    Types: .dart, .yml, .yaml, .swift, .cc, .cmake
+
+[✓] README maintenance log for 2026-05-28 session
+    File: README.md
+
+================================================================================
+5. COMPLETED TASKS — TRAINING & ML (PYTHON)
+================================================================================
+
+[✓] Training folder with full retrain pipeline
+    Directory: training/
+
+[✓] Scripts: export_firestore_dataset.py, dataset_manager.py, train_model.py
+[✓] Scripts: auto_retrain.py, upload_model.py, hard_example_mining.py
+[✓] Scripts: calibrate_milk_mirror.py, export_bootstrap_model.py
+[✓] One-click local train: training/train_all.ps1
+[✓] Retrain config with thresholds (300 samples, accuracy gates)
+    File: training/config/retrain_config.json
+[✓] Output model copied to assets/model/model.tflite
+[✓] Training metadata and milk mirror calibration JSON in assets
+[✓] Documentation: docs/CONTINUOUS_LEARNING.md, training/README.md
+
+================================================================================
+6. COMPLETED TASKS — DOCUMENTATION
+================================================================================
+
+[✓] README.md — features, architecture, pipeline, testing, recent changes
+[✓] docs/EXECUTION_FLOW.md — file-to-file trigger map
+[✓] docs/MILK_MIRROR_SPEC.md — product spec vs implementation
+[✓] docs/MULTI_STAGE_PIPELINE.md — 5-stage validation architecture
+[✓] docs/CONTINUOUS_LEARNING.md — self-improving pipeline guide
+[✓] docs/SCIENTIFIC_UDDER_IMPLEMENTATION.md — 9-stage trait extraction plan
+[✓] docs/FIRESTORE_DATA.md — Firestore collection layout
+[✓] PROJECT_PROPOSAL.md — original project proposal
+[✓] Today maintenance log (2026-05-28) in README.md
+
+================================================================================
+7. IN PROGRESS / PARTIALLY DONE
+================================================================================
+
+[~] Deployment branch workflow — branch created locally; remote push optional
+[~] Firestore-only mode — implemented in code; CONTINUOUS_LEARNING.md still
+    references Storage in some setup steps (docs need update)
+[~] Model accuracy improvement — gate and pipeline work; field MAE still target
+[~] Analyzer warnings backlog — CI passes with --no-fatal-warnings; local
+    analyze may still show info/warning items
+
+================================================================================
+8. FUTURE DEVELOPMENT — HIGH PRIORITY
+================================================================================
+
+8.1 Debug-Only Model Training Automation (REQUESTED, NOT YET BUILT)
+-------------------------------------------------------------------
+[ ] One-click Start Training button (debug mode only)
+[ ] One-click Stop Training button (debug mode only)
+[ ] Wire to training/auto_retrain.py or train_all.ps1 via Process.run
+[ ] Show live training status / log output in debug UI panel
+[ ] Must NOT appear in release/production builds (kDebugMode guard)
+
+8.2 Deployment & Release
+------------------------
+[ ] Finalize deployment branch and push to origin
+[ ] Android release APK/AAB build and signing
+[ ] iOS build (if in scope)
+[ ] App store / Play Store submission checklist
+[ ] Version bump and changelog for production release
+
+8.3 Firebase / Backend
+----------------------
+[ ] Update docs for Firestore-only mode (remove Storage setup steps)
+[ ] Firestore security rules with Firebase Auth (replace open rules)
+[ ] Farmer-scoped writes: captures/{id} owned by authenticated user
+[ ] Service account only for ml_pipeline/state and model metadata writes
+[ ] Optional: re-enable Storage later if bucket is configured correctly
+
+8.4 Model Accuracy
+------------------
+[ ] Collect 500+ rear-udder photos per liter band (6–10 L)
+[ ] Verify farmer-reported liter labels for training data
+[ ] Run hard_example_mining.py and manually correct mislabeled samples
+[ ] Review confusion_matrix.png after each retrain
+[ ] Field-test MAE in liters (not only val_accuracy)
+[ ] Current model ~73% val accuracy baseline (commit: stage of model with 73%)
+
+================================================================================
+9. FUTURE DEVELOPMENT — MEDIUM PRIORITY
+================================================================================
+
+9.1 YOLO / Advanced CV Models
+-------------------------------
+[ ] Add assets/model/udder_yolo.tflite (YOLOv8-nano bbox)
+[ ] Implement YoloUdderDetector in rear_udder_detection_service.dart
+[ ] Add udder_seg.tflite (DeepLabV3 / U-Net 256² INT8) — Stage 5
+[ ] Add udder_keypoints.tflite (MobilePose / HRNet-lite) — Stage 6
+[ ] Add hindquarter_det.tflite (YOLOv8-nano) — Stage 2
+[ ] Add trait_regressor.tflite (FC network) — Stage 9
+
+9.2 Continuous Learning Automation
+-----------------------------------
+[ ] Scheduled auto_retrain.py via cron or GitHub Actions (daily 2 AM)
+[ ] Set schedule_daily: true in retrain_config.json
+[ ] Monitor ml_pipeline/state: pendingTrainingCount, valAccuracy, modelVersion
+[ ] A/B deploy: model_candidate.tflite vs production model
+[ ] Smart replacement: deploy only if val_accuracy improves ≥2% and ≥45%
+
+9.3 Testing Improvements
+--------------------------
+[ ] Make buffalo_gate_test.dart deterministic on CI (mock image features)
+[ ] Fix widget_test.dart Firebase bootstrap for headless CI (not just skip)
+[ ] Add integration test for full 3-stage UI flow
+[ ] Add regression tests for "prediction gone" pipeline_gate early exit
+
+9.4 Platform & UX
+-----------------
+[ ] Windows camera support (currently gallery-only)
+[ ] Multi-language support (from original proposal future scope)
+[ ] Real-time video detection (future scope)
+[ ] Cloud AI inference option for advanced accuracy (future scope)
+
+================================================================================
+10. FUTURE DEVELOPMENT — LOW PRIORITY / ORIGINAL PROPOSAL SCOPE
+================================================================================
+
+[ ] User authentication system
+[ ] Full admin dashboard in main app (separate admin entry exists)
+[ ] Large-scale dataset automation
+[ ] User personalization
+[ ] Hashtag mapping for identified objects (original proposal feature)
+
+================================================================================
+11. KNOWN ISSUES & TECHNICAL DEBT
+================================================================================
+
+ISSUE                                    STATUS        NOTES
+---------------------------------------  ------------  -------------------------
+Firebase Storage errors at runtime       RESOLVED      Firestore-only mode
+Prediction pipeline early exit           RESOLVED      Pre-check no longer stops flow
+CI dart pub get failure                  RESOLVED      Flutter CI workflow
+CI Node.js 20 deprecation warning        RESOLVED      checkout@v5 + Node 24 env
+CI test failures (gate/smoke/widget)      MITIGATED     skip on CI; pass locally
+LF/CRLF git warnings on Windows          RESOLVED      .gitattributes added
+Windows Firebase SDK ZIP extract fail    RESOLVED      flutter clean + precache
+Git push rejected (remote ahead)         RESOLVED      pull --rebase workflow
+Analyzer warning backlog                 OPEN          CI ignores; clean locally
+CONTINUOUS_LEARNING.md Storage refs      OPEN          Docs outdated for Firestore-only
+Environment-sensitive gate tests         OPEN          Heuristic variance on CI
+Debug train/stop one-click UI            NOT STARTED   User requested 2026-05-30
+
+================================================================================
+12. FILE CHANGE LOG — KEY FILES MODIFIED (2026-05-28 SESSION)
+================================================================================
+
+File                                      Change summary
+----------------------------------------  ---------------------------------
+.github/workflows/dart.yml                Flutter CI, checkout v5, Node 24
+pubspec.yaml                              Firebase test dep alignment
+pubspec.lock                              Dependency lock refresh
+lib/main.dart                             Lint fixes, deprecated API, dead code
+lib/services/classifier_service_new.dart  Storage fallback, pipeline fix, lints
+lib/services/capture_firestore_service.dart Firestore-only, no Storage upload
+lib/config/continuous_learning_config.dart useFirebaseStorage = false
+lib/services/milk_mirror_measurement_service.dart Unused import/var removed
+lib/widgets/enterprise/ai_analysis_overlay.dart Lint fix
+lib/services/scientific_udder/stages/*    Unused dart:ui imports removed
+test/tflite_pipeline_smoke_test.dart      CI skip + avoid_print ignore
+test/buffalo_gate_test.dart               CI skip for flaky cases
+test/widget_test.dart                     CI skip for Firebase bootstrap
+test/scientific_udder_trait_test.dart     Unused import removed
+.gitattributes                            LF line ending policy
+README.md                                 Maintenance log + testing updates
+
+================================================================================
+13. TEST COMMANDS REFERENCE
+================================================================================
+
+# Full test suite
+flutter test
+
+# Individual test files
+flutter test test/buffalo_gate_test.dart
+flutter test test/tflite_pipeline_smoke_test.dart
+flutter test test/capture_firestore_test.dart
+flutter test test/scientific_udder_trait_test.dart
+
+# Static analysis
+flutter analyze
+flutter analyze --no-fatal-warnings --no-fatal-infos
+
+# Run app (debug)
+flutter pub get
+flutter run
+
+# Local model retrain
+cd training
+.\train_all.ps1
+
+# Automatic retrain (when ≥300 samples)
+python auto_retrain.py
+python auto_retrain.py --force
+
+================================================================================
+14. GIT COMMIT HISTORY (RECENT — NEWEST FIRST)
+================================================================================
+
+d720af9  Merge pull request #3 from roza654/main
+978e366  Clear all errors in roja code
+81248de  .gitattributes file created and setup CI error
+3d1b494  Merge pull request #2 from roza654/main
+c0065bd  test: skip environment-sensitive smoke and gate cases on CI
+79262ae  GitHub Actions build failure solution
+3666b07  chore: flutter ci + analyzer cleanup
+843fcb4  Fix: Use Flutter commands instead of Dart for Firebase dependencies
+402c238  chore: update actions/checkout for Node.js 24 compatibility
+ca328f8  Fix: firebase_core_platform_interface Flutter SDK dependency
+d035b18  README file updated
+8c1c628  Scientific udder analysis and capture improvements
+1dd3279  AI pipeline and continuous learning features
+cea2fde  Model stage with ~73% accuracy
+224b45d  Gate working (humans, things, buffalo) — accuracy work next
+
+================================================================================
+15. SESSION NOTES (2026-05-30)
+================================================================================
+
+User request today:
+  - Provide a text file tracking all completed work and future development
+  - (Prior session) Debug-only one-click train/stop model automation — pending
+
+Firestore-only confirmation:
+  - App should use Firestore for captures and metadata only
+  - No Firebase Storage uploads or model downloads until bucket is configured
+  - Bundled assets/model/model.tflite used at runtime
+
+Pipeline expectation:
+  - Full checkpoint pipeline must run: quality → animal → angle → udder → milk
+  - Results dashboard should show all pipeline steps, not early "Photo Not Suitable"
+    exit without subsequent stages
+
+================================================================================
+END OF WORK TRACKING FILE
+================================================================================
+Update this file whenever a task is completed, deferred, or newly identified.
+Suggested filename for future updates: WORK_TRACKING.txt (same file, append or
+edit section dates as needed).

@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import 'dairy_showcase_svgs.dart';
 import 'responsive_layout.dart';
@@ -82,6 +83,7 @@ class _DairyAiShowcaseCarouselState extends State<DairyAiShowcaseCarousel>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final pageController = _ensurePageController(context);
     final tier = ResponsiveLayout.tier(context);
     final compact = tier == ScreenTier.compact;
@@ -115,11 +117,11 @@ class _DairyAiShowcaseCarouselState extends State<DairyAiShowcaseCarousel>
                 child: Row(
                   children: [
                     _pill(
-                      widget.modelReady ? 'AI ONLINE' : 'BOOTING AI',
+                      widget.modelReady ? l10n.statusAiOnline : l10n.showcaseBootingAi,
                       widget.modelReady ? AppColors.success : AppColors.warning,
                     ),
                     const Spacer(),
-                    _pill('MILK MIRROR', AppColors.primary),
+                    _pill(l10n.showcaseMilkMirror, AppColors.primary),
                   ],
                 ),
               ),
@@ -158,7 +160,7 @@ class _DairyAiShowcaseCarouselState extends State<DairyAiShowcaseCarousel>
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 400),
                       child: Text(
-                        _items[_logicalIndex].title,
+                        _showcaseTitle(l10n, _logicalIndex),
                         key: ValueKey(_logicalIndex),
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
@@ -169,7 +171,7 @@ class _DairyAiShowcaseCarouselState extends State<DairyAiShowcaseCarousel>
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _items[_logicalIndex].subtitle,
+                      _showcaseSubtitle(l10n, _logicalIndex),
                       style: const TextStyle(
                         fontSize: 11,
                         color: AppColors.textSecondary,
@@ -233,6 +235,28 @@ class _DairyAiShowcaseCarouselState extends State<DairyAiShowcaseCarousel>
       ),
     );
   }
+
+  static String _showcaseTitle(AppLocalizations l10n, int index) => switch (index) {
+        0 => l10n.showcaseBuffaloRearTitle,
+        1 => l10n.showcaseCowRearTitle,
+        2 => l10n.showcaseMilkingTitle,
+        3 => l10n.showcaseAiScanTitle,
+        4 => l10n.showcaseHealthTitle,
+        5 => l10n.showcaseLactationTitle,
+        6 => l10n.showcaseMilkYieldTitle,
+        _ => '',
+      };
+
+  static String _showcaseSubtitle(AppLocalizations l10n, int index) => switch (index) {
+        0 => l10n.showcaseBuffaloRearSub,
+        1 => l10n.showcaseCowRearSub,
+        2 => l10n.showcaseMilkingSub,
+        3 => l10n.showcaseAiScanSub,
+        4 => l10n.showcaseHealthSub,
+        5 => l10n.showcaseLactationSub,
+        6 => l10n.showcaseMilkYieldSub,
+        _ => '',
+      };
 
   static Widget _pill(String text, Color color) {
     return Container(

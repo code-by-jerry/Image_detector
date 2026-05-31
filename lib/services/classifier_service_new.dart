@@ -10,6 +10,7 @@ import '../models/dairy_pipeline_report.dart';
 import 'dairy_pipeline_builder.dart';
 import 'ai_pipeline_orchestrator.dart';
 import '../config/scientific_udder_config.dart';
+import '../config/continuous_learning_config.dart';
 import '../models/scientific_udder_models.dart';
 import 'model_update_service.dart';
 import 'scientific_udder/scientific_udder_pipeline.dart';
@@ -115,15 +116,22 @@ class ClassifierService {
     ModelUpdateService? modelUpdate;
     String? modelPath;
     String? labelsPath;
-    try {
-      modelUpdate = ModelUpdateService();
-      await modelUpdate.checkAndDownload();
-      modelPath = await modelUpdate.resolveModelPath();
-      labelsPath = await modelUpdate.resolveLabelsPath();
-    } catch (e) {
+    if (ContinuousLearningConfig.useFirebaseStorage) {
+      try {
+        modelUpdate = ModelUpdateService();
+        await modelUpdate.checkAndDownload();
+        modelPath = await modelUpdate.resolveModelPath();
+        labelsPath = await modelUpdate.resolveLabelsPath();
+      } catch (e) {
+        InferenceLogger.log(
+          'Classifier',
+          'Model update unavailable ($e); falling back to bundled assets',
+        );
+      }
+    } else {
       InferenceLogger.log(
         'Classifier',
-        'Model update unavailable ($e); falling back to bundled assets',
+        'Firestore-only mode enabled; using bundled model assets',
       );
     }
 
@@ -206,16 +214,9 @@ class ClassifierService {
     final preMilk = await _aiPipeline.validatePreMilk(imagePath: imagePath);
     if (!preMilk.overallPassed) {
       final stage = preMilk.failedStage?.name ?? 'pipeline';
-      InferenceLogger.endSession('rejected_pipeline_$stage');
-      return PredictionResult(
-        label: 'Photo Not Suitable',
-        confidence: 1.0,
-        hashtags: [
-          'Multi-stage validation failed ($stage)',
-          preMilk.rejectReason ?? 'Retake a clear rear udder photo',
-        ],
-        keypoints: [],
-        predictionSource: 'pipeline_gate',
+      InferenceLogger.log(
+        'PIPELINE',
+        'Pre-check failed at $stage; continuing to full classifier flow',
       );
     }
 
@@ -602,7 +603,7 @@ class VeterinaryBuffaloDetector {
           anatomy != null &&
           _isStrongRearBuffaloEvidence(fullImage, anatomy);
 
-      if (strongRearBuffalo && anatomy != null && fullImage != null) {
+      if (strongRearBuffalo) {
         InferenceLogger.log(
           'RULES',
           'Strong rear buffalo evidence conf=${(anatomy.confidence * 100).toStringAsFixed(0)}% '
@@ -659,7 +660,7 @@ class VeterinaryBuffaloDetector {
       late final double buffaloProb;
       late final Map<String, dynamic> visualValidation;
 
-      if (rearBuffalo && anatomy != null) {
+      if (rearBuffalo) {
         InferenceLogger.log(
           'RULES',
           'Rear anatomy OK conf=${(anatomy.confidence * 100).toStringAsFixed(0)}% '
@@ -1591,11 +1592,17 @@ class VeterinaryBuffaloDetector {
     
     double buffaloScore = 0.0;
 
-    if (brownRatio > 0.10) buffaloScore += 0.28;
-    else if (brownRatio > 0.05) buffaloScore += 0.16;
+    if (brownRatio > 0.10) {
+      buffaloScore += 0.28;
+    } else if (brownRatio > 0.05) {
+      buffaloScore += 0.16;
+    }
 
-    if (blackRatio > 0.08 && blackRatio < 0.50) buffaloScore += 0.24;
-    else if (blackRatio > 0.04) buffaloScore += 0.12;
+    if (blackRatio > 0.08 && blackRatio < 0.50) {
+      buffaloScore += 0.24;
+    } else if (blackRatio > 0.04) {
+      buffaloScore += 0.12;
+    }
 
     if (darkRatio > 0.18 && darkRatio < 0.60) buffaloScore += 0.18;
 
@@ -1639,12 +1646,19 @@ class VeterinaryBuffaloDetector {
     
     // Cow scoring based on light and brown colors - less aggressive
     double cowScore = 0.0;
-    if (lightRatio > 0.5) cowScore += 0.6;
-    else if (lightRatio > 0.4) cowScore += 0.4;
-    else if (lightRatio > 0.3) cowScore += 0.2;
+    if (lightRatio > 0.5) {
+      cowScore += 0.6;
+    } else if (lightRatio > 0.4) {
+      cowScore += 0.4;
+    } else if (lightRatio > 0.3) {
+      cowScore += 0.2;
+    }
     
-    if (brownRatio > 0.6) cowScore += 0.4;
-    else if (brownRatio > 0.4) cowScore += 0.2;
+    if (brownRatio > 0.6) {
+      cowScore += 0.4;
+    } else if (brownRatio > 0.4) {
+      cowScore += 0.2;
+    }
     
     return math.max(0.0, math.min(1.0, cowScore));
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 
 class EnterpriseAppHeader extends StatelessWidget {
@@ -15,6 +16,7 @@ class EnterpriseAppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -39,9 +41,9 @@ class EnterpriseAppHeader extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Text(
-                    'Milk Mirror',
-                    style: TextStyle(
+                  Text(
+                    l10n.appTitle,
+                    style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w900,
                       color: AppColors.textPrimary,
@@ -49,7 +51,7 @@ class EnterpriseAppHeader extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  _statusChip(),
+                  _statusChip(l10n),
                 ],
               ),
               const SizedBox(height: 4),
@@ -64,7 +66,7 @@ class EnterpriseAppHeader extends StatelessWidget {
     ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.02, end: 0);
   }
 
-  Widget _statusChip() {
+  Widget _statusChip(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -86,7 +88,7 @@ class EnterpriseAppHeader extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            modelReady ? 'AI ONLINE' : 'BOOTING',
+            modelReady ? l10n.statusAiOnline : l10n.statusBooting,
             style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w800,

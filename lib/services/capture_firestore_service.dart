@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show debugPrint, defaultTargetPlatform;
 
 import '../config/continuous_learning_config.dart';
@@ -14,20 +12,17 @@ import 'content_hash_service.dart';
 import 'device_session_service.dart';
 import 'firestore_image_codec.dart';
 
-/// Saves every capture to Firestore + Storage for continuous learning export.
+/// Saves every capture to Firestore for continuous learning export.
 class CaptureFirestoreService {
   CaptureFirestoreService({
     FirebaseFirestore? firestore,
-    FirebaseStorage? storage,
     DeviceSessionService? session,
     AiPipelineOrchestrator? pipeline,
   })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? FirebaseStorage.instance,
         _session = session ?? DeviceSessionService(),
         _pipeline = pipeline ?? AiPipelineOrchestrator();
 
   final FirebaseFirestore _firestore;
-  final FirebaseStorage _storage;
   final DeviceSessionService _session;
   final AiPipelineOrchestrator _pipeline;
 
@@ -54,10 +49,7 @@ class CaptureFirestoreService {
     final qualityStage =
         pipelineReport.stageResult(pipeline.PipelineStage.quality);
 
-    final storageUrl = await _uploadOriginal(
-      captureId: captureId,
-      imagePath: imagePath,
-    );
+    const String? storageUrl = null;
 
     final imageData = await FirestoreImageCodec.encodeFile(imagePath);
 
@@ -166,8 +158,8 @@ class CaptureFirestoreService {
       'predictionSource': result.predictionSource,
       'rulesGatePassed': rulesPassed,
       'eligibleForTraining': eligibleForTraining,
-      if (trainingLabel != null) 'trainingLabel': trainingLabel,
-      if (trainingDocPath != null) 'trainingDocPath': trainingDocPath,
+      'trainingLabel': trainingLabel,
+      'trainingDocPath': trainingDocPath,
       'analyzedAt': FieldValue.serverTimestamp(),
       if (result.hashtags.isNotEmpty) 'hashtags': result.hashtags,
       if (result.scientificReport != null)
@@ -180,17 +172,6 @@ class CaptureFirestoreService {
     );
   }
 
-  Future<String> _uploadOriginal({
-    required String captureId,
-    required String imagePath,
-  }) async {
-    final ref = _storage.ref(
-      '${ContinuousLearningConfig.capturesStoragePrefix}/$captureId/original.jpg',
-    );
-    await ref.putFile(File(imagePath));
-    return await ref.getDownloadURL();
-  }
-
   Future<String?> _mirrorToTrainingCollection({
     required String captureId,
     required String trainingLabel,
@@ -200,25 +181,6 @@ class CaptureFirestoreService {
     final folder = _sanitize(trainingLabel);
     final storagePath =
         '${ContinuousLearningConfig.trainingQueuePrefix}/$folder/$captureId.jpg';
-
-    String? trainingStorageUrl;
-    final imageStorageUrl = captureData['imageStorageUrl'] as String?;
-    if (imageStorageUrl != null && imageStorageUrl.isNotEmpty) {
-      trainingStorageUrl = imageStorageUrl;
-    } else {
-      final imageData = captureData['imageData'] as String?;
-      if (imageData != null && imageData.startsWith('data:image')) {
-        final ref = _storage.ref(storagePath);
-        final bytes = FirestoreImageCodec.decodeDataUrl(imageData);
-        if (bytes != null) {
-          await ref.putData(
-            Uint8List.fromList(bytes),
-            SettableMetadata(contentType: 'image/jpeg'),
-          );
-          trainingStorageUrl = await ref.getDownloadURL();
-        }
-      }
-    }
 
     final docRef = _firestore
         .collection(_trainingAssets)
@@ -230,8 +192,10 @@ class CaptureFirestoreService {
       'id': captureId,
       'captureId': captureId,
       'imagePath': captureData['imageData'],
-      if (trainingStorageUrl != null) 'imageStorageUrl': trainingStorageUrl,
-      'imageStoragePath': storagePath,
+      if (captureData['imageStorageUrl'] != null)
+        'imageStorageUrl': captureData['imageStorageUrl'],
+      if (ContinuousLearningConfig.useFirebaseStorage)
+        'imageStoragePath': storagePath,
       'imageName': captureData['imageName'],
       'primaryLabel': folder,
       'hashtags': result.hashtags,
