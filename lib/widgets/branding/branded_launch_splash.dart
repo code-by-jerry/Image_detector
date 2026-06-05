@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 
-/// Full-viewport launch splash — [light-logo] on #414A1E (no rounded clip).
+/// Launch splash — cream background + centered tagline wordmark.
 class BrandedLaunchSplash extends StatelessWidget {
   const BrandedLaunchSplash({super.key});
 
-  static const background = Color(0xFF414A1E);
-  static const logoAsset = 'assets/branding/splash/light-logo.png';
+  static const background = Color(0xFFFAF8F2);
+  static const taglineAsset = 'assets/branding/splash/tagline.png';
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: background,
-      body: SizedBox.expand(
-        child: Image(
-          image: AssetImage(logoAsset),
-          fit: BoxFit.cover,
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 48),
+          child: Image(
+            image: AssetImage(taglineAsset),
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );

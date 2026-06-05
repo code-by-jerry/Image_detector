@@ -64,15 +64,14 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
 flutter_native_splash:
-  color: "#414A1E"
-  background_image: assets/branding/splash/light-logo.png
-  android_gravity: fill
-  ios_content_mode: scaleAspectFill
-  fullscreen: true
+  color: "#FAF8F2"
+  image: assets/branding/splash/tagline.png
+  android_gravity: center
+  ios_content_mode: scaleAspectFit
   android_12:
-    color: "#414A1E"
-    image: assets/branding/splash/light-logo.png
-    icon_background_color: "#414A1E"
+    color: "#FAF8F2"
+    image: assets/branding/splash/tagline.png
+    icon_background_color: "#FAF8F2"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -98,6 +97,7 @@ flutter:
     - assets/branding/logo/logo-tagline.png
     - assets/branding/splash/splash screen.png
     - assets/branding/splash/light-logo.png
+    - assets/branding/splash/tagline.png
     - assets/branding/onboarding/onscreen-1.png
     - assets/branding/onboarding/onscreen-2.png
     - assets/branding/onboarding/onscreen-3.png
