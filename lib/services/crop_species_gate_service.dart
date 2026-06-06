@@ -79,7 +79,7 @@ class CropSpeciesGateService {
       isBuffalo: isBuffalo,
       confidence: score,
       reason: isBuffalo
-          ? 'Rear escutcheon matches buffalo milk mirror'
+          ? 'Rear escutcheon matches buffalo profile'
           : 'Crop does not match buffalo rear (possible cow/goat/other)',
       escutcheonAspect: aspect,
       organicRatio: organic,

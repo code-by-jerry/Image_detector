@@ -1,6 +1,7 @@
 import '../../config/scientific_udder_config.dart';
 import '../../models/scientific_udder_models.dart';
 import '../inference_logger.dart';
+import '../udder_seg_tflite_service.dart';
 import 'scientific_image_context.dart';
 import 'stages/stage0_quality_bridge.dart';
 import 'stages/stage1_validity_bridge.dart';
@@ -132,7 +133,14 @@ class ScientificUdderPipeline {
       return _reject(stages, s4result.metric.issues.join(','), pose: pose);
     }
 
-    final seg = _s5.run(ctx, loc.anatomy!, loc.roi!);
+    final tfliteMask = await UdderSegTfliteService.instance.segmentFile(imagePath);
+
+    final seg = _s5.run(
+      ctx,
+      loc.anatomy!,
+      loc.roi!,
+      tfliteMask: tfliteMask,
+    );
     stages.add(seg.stage);
     if (!seg.stage.passed) {
       return _reject(stages, seg.stage.issues.join(','), pose: pose);
@@ -195,6 +203,7 @@ class ScientificUdderPipeline {
       regressionConfidence: reg.confidence,
       rectifiedImagePath: rectPath,
       pose: pose,
+      keypoints: keypoints,
     );
   }
 

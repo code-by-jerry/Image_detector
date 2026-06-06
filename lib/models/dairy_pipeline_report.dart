@@ -18,7 +18,7 @@ class PipelineStep {
   });
 }
 
-/// Full Milk Mirror pipeline snapshot for UI (matches infographic sections).
+/// Full పాల Predictor pipeline snapshot for UI (matches infographic sections).
 class DairyPipelineReport {
   final List<PipelineStep> workflowSteps;
   final String species;

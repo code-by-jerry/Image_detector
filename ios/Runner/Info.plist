@@ -7,11 +7,11 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>Image Detector</string>
+		<string>పాల Predictor</string>
 		<key>NSCameraUsageDescription</key>
-		<string>Milk Mirror needs camera access to capture rear-udder photos for milk yield analysis.</string>
+		<string>పాల Predictor needs camera access to capture rear-udder photos for milk yield analysis.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Milk Mirror needs photo library access to upload buffalo images for analysis.</string>
+		<string>పాల Predictor needs photo library access to upload buffalo images for analysis.</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -19,7 +19,7 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
-		<string>image_detector</string>
+		<string>పాల Predictor</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>

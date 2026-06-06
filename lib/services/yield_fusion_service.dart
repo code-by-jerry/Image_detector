@@ -63,7 +63,7 @@ class YieldFusionResult {
   final String detail;
 }
 
-/// Blends Milk Mirror geometry, TFLite band, and farmer context (Phase B).
+/// Blends escutcheon geometry, TFLite band, and farmer context (Phase B).
 class YieldFusionService {
   static const double _farmerWeight = 0.10;
 
@@ -115,9 +115,7 @@ class YieldFusionService {
     if (input.symmetryIndex > 0.42) {
       confidence *= 0.92;
     }
-    if (!input.tfliteTrained || (tflite?.lowConfidence ?? true)) {
-      confidence = math.min(confidence, 0.72);
-    }
+    // Display cap / boost handled in [YieldConfidenceComposer] after scientific pipeline.
     if (!input.mirrorSuccess) {
       confidence = math.min(confidence, 0.55);
     }

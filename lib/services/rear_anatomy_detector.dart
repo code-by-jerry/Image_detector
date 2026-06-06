@@ -242,10 +242,10 @@ class RearAnatomyDetector {
     final box = torso.box;
     final bh = box.height;
 
-    var bestY = box.top + bh * 0.36;
+    var bestY = box.top + bh * 0.26;
     var bestScore = -1.0;
 
-    for (var y = box.top + bh * 0.28; y <= box.top + bh * 0.46; y += 2) {
+    for (var y = box.top + bh * 0.20; y <= box.top + bh * 0.36; y += 2) {
       final sil = _silhouetteAtRow(image, box, y.round());
       if (sil == null) continue;
       final width = sil.right - sil.left;
@@ -264,8 +264,8 @@ class RearAnatomyDetector {
       final cx = torso.centroidX;
       return _LandmarkSet(
         Offset.zero,
-        Offset((cx - box.width * 0.2) / w, 0.38),
-        Offset((cx + box.width * 0.2) / w, 0.38),
+        Offset((cx - box.width * 0.2) / w, 0.30),
+        Offset((cx + box.width * 0.2) / w, 0.30),
         Offset.zero,
       );
     }
@@ -280,7 +280,7 @@ class RearAnatomyDetector {
     leftX = _refinePinX(image, yPx, leftX, sil.left, sil.centerX, isLeft: true);
     rightX = _refinePinX(image, yPx, rightX, sil.centerX, sil.right, isLeft: false);
 
-    final pinY = (bestY / h).clamp(0.22, 0.50);
+    final pinY = (bestY / h).clamp(0.18, 0.38);
     return _LandmarkSet(
       Offset.zero,
       Offset((leftX / w).clamp(0.05, 0.95), pinY),
@@ -358,8 +358,8 @@ class RearAnatomyDetector {
     final bh = box.height;
     final pinY = ((leftPin.dy + rightPin.dy) / 2) * h;
 
-    final yMin = math.max(box.top + bh * 0.52, pinY + bh * 0.08);
-    final yMax = box.top + bh * 0.80;
+    final yMin = math.max(box.top + bh * 0.48, pinY + bh * 0.12);
+    final yMax = math.min(box.top + bh * 0.88, h.toDouble() - 2);
     final xMin = (math.min(leftPin.dx, rightPin.dx) * w + box.width * 0.05)
         .clamp(box.left, box.right);
     final xMax = (math.max(leftPin.dx, rightPin.dx) * w - box.width * 0.05)
@@ -391,7 +391,7 @@ class RearAnatomyDetector {
 
     if (bestScore < 0) {
       bestX = spineX;
-      bestY = pinY + bh * 0.22;
+      bestY = pinY + bh * 0.32;
     }
 
     var udderX = bestX / w;
@@ -434,12 +434,12 @@ class RearAnatomyDetector {
     final spineX = ((leftPin.dx + rightPin.dx) / 2) * w;
     final top = box.top;
     final pinY = ((leftPin.dy + rightPin.dy) / 2) * h;
-    final ySearchEnd = math.min(box.top + box.height * 0.28, pinY - box.height * 0.08);
+    final ySearchEnd = math.min(box.top + box.height * 0.22, pinY - box.height * 0.10);
 
-    var bestY = top + box.height * 0.08;
+    var bestY = top + box.height * 0.04;
     var bestScore = double.infinity;
 
-    // Tail base: narrowest spine column just above the pin row.
+    // Tail head: narrowest spine column above pins; prefer higher attachment.
     for (var y = top; y <= ySearchEnd; y += 2) {
       var colWidth = 0;
       final x0 = (spineX - box.width * 0.08).round().clamp(0, w - 1);
@@ -448,16 +448,19 @@ class RearAnatomyDetector {
         if (_isAnimalPixel(image.getPixel(x, y.round()))) colWidth++;
       }
       final yNorm = (y - top) / math.max(1, ySearchEnd - top);
-      final score = colWidth + yNorm * 3; // prefer higher rows when similar
+      // Prefer higher rows (tail base at body) when width is similar.
+      final score = colWidth * 0.65 + yNorm * 12;
       if (colWidth > 0 && score < bestScore) {
         bestScore = score;
         bestY = y;
       }
     }
 
+    final pinMid = (leftPin.dy + rightPin.dy) / 2;
+    final tailHeadY = math.min(bestY / h, pinMid - 0.11).clamp(0.04, pinMid - 0.07);
     return Offset(
       (spineX / w).clamp(0.0, 1.0),
-      (bestY / h).clamp(0.04, leftPin.dy - 0.04),
+      tailHeadY,
     );
   }
 
@@ -551,12 +554,12 @@ class RearAnatomyDetector {
     }
 
     final spineX = ((l.dx + r.dx) / 2).clamp(0.05, 0.95);
-    final pinY = ((l.dy + r.dy) / 2).clamp(0.20, 0.52);
+    final pinY = ((l.dy + r.dy) / 2).clamp(0.18, 0.40);
 
     l = Offset(l.dx, pinY);
     r = Offset(r.dx, pinY);
 
-    var a = Offset(spineX, pointA.dy.clamp(box.top / h + 0.02, pinY - 0.06));
+    var a = Offset(spineX, math.min(pointA.dy, pinY - 0.10).clamp(box.top / h + 0.02, pinY - 0.07));
     var u = udder;
 
     // Keep udder centered unless pink mass is clearly off-axis (<12% offset).

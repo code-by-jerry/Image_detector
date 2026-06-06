@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Milk Mirror brand tokens — see ui_plan.md
+/// పాల Predictor brand tokens — see ui_plan.md
 abstract final class AppColors {
   static const background = Color(0xFFFAF8F2);
   static const surface = Color(0xFFFFFFFF);

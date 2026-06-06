@@ -1,5 +1,5 @@
 name: image_detector
-description: "A new Flutter project."
+description: "పాల Predictor — AI powered dairy analytics."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -65,12 +65,12 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#FAF8F2"
-  image: assets/branding/splash/tagline.png
+  image: assets/branding/splash/splash-native.png
   android_gravity: center
   ios_content_mode: scaleAspectFit
   android_12:
     color: "#FAF8F2"
-    image: assets/branding/splash/tagline.png
+    image: assets/branding/splash/splash-icon-blank.png
     icon_background_color: "#FAF8F2"
 
 # For information on the generic Dart part of this file, see the
@@ -87,6 +87,8 @@ flutter:
 
   assets:
     - assets/model/model.tflite
+    - assets/model/udder_seg.tflite
+    - assets/model/udder_seg_metadata.json
     - assets/model/milk_mirror_calibration.json
     - assets/model/training_metadata.json
     - assets/labels/labels.txt
@@ -94,10 +96,14 @@ flutter:
     - assets/branding/logo/logo.png
     - assets/branding/logo/logo-1.png
     - assets/branding/logo/logo-2.png
+    - assets/branding/logo/logo-3.png
+    - assets/branding/logo/logo-3-display.png
     - assets/branding/logo/logo-tagline.png
-    - assets/branding/splash/splash screen.png
-    - assets/branding/splash/light-logo.png
-    - assets/branding/splash/tagline.png
+    - assets/branding/splash/new.png
+    - assets/branding/splash/new-display.png
+    - assets/branding/splash/spash-logo.png
+    - assets/branding/splash/splash-native.png
+    - assets/branding/splash/splash-icon-blank.png
     - assets/branding/onboarding/onscreen-1.png
     - assets/branding/onboarding/onscreen-2.png
     - assets/branding/onboarding/onscreen-3.png

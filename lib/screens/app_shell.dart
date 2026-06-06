@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n_extensions.dart';
 import '../models/scan_actions.dart';
+import '../services/locale_service.dart';
 import '../theme/app_theme.dart';
 import 'about_screen.dart';
 import 'galleries_screen.dart';
@@ -13,7 +15,10 @@ class AppShell extends StatefulWidget {
   const AppShell({
     super.key,
     required this.scanPageBuilder,
+    required this.localeService,
   });
+
+  final LocaleService localeService;
 
   final Widget Function(
     VoidCallback goHome,
@@ -76,6 +81,8 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: IndexedStack(
@@ -84,6 +91,7 @@ class _AppShellState extends State<AppShell> {
           HomeDashboardScreen(
             onScanTap: _launchScan,
             onViewAllGalleries: _goGalleries,
+            localeService: widget.localeService,
           ),
           GalleriesScreen(onStartScan: _runScanChoice),
           widget.scanPageBuilder(_goHome, _registerScan),
@@ -121,29 +129,30 @@ class _AppShellState extends State<AppShell> {
           children: [
             _NavItem(
               icon: Icons.home_rounded,
-              label: 'Home',
+              label: l10n.navHome,
               selected: _tabIndex == 0,
               onTap: () => setState(() => _tabIndex = 0),
             ),
             _NavItem(
               icon: Icons.photo_library_rounded,
-              label: 'Galleries',
+              label: l10n.navGalleries,
               selected: _tabIndex == 1,
               onTap: () => setState(() => _tabIndex = 1),
             ),
             _ScanNavLabel(
+              label: l10n.navScan,
               selected: _tabIndex == 2,
               onTap: _launchScan,
             ),
             _NavItem(
               icon: Icons.insights_rounded,
-              label: 'Insights',
+              label: l10n.navInsights,
               selected: _tabIndex == 3,
               onTap: () => setState(() => _tabIndex = 3),
             ),
             _NavItem(
               icon: Icons.info_outline_rounded,
-              label: 'About',
+              label: l10n.navAbout,
               selected: _tabIndex == 4,
               onTap: () => setState(() => _tabIndex = 4),
             ),
@@ -157,10 +166,12 @@ class _AppShellState extends State<AppShell> {
 /// Scan label aligned with other tabs; FAB sits in the notch above.
 class _ScanNavLabel extends StatelessWidget {
   const _ScanNavLabel({
+    required this.label,
     required this.selected,
     required this.onTap,
   });
 
+  final String label;
   final bool selected;
   final VoidCallback onTap;
 
@@ -169,9 +180,17 @@ class _ScanNavLabel extends StatelessWidget {
     final color = selected ? AppColors.primary : AppColors.textSecondary;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+      borderRadius: BorderRadius.circular(14),
+      splashColor: AppColors.primary.withValues(alpha: 0.08),
+      highlightColor: Colors.transparent,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+        ),
         child: SizedBox(
           width: 56,
           child: Column(
@@ -179,7 +198,7 @@ class _ScanNavLabel extends StatelessWidget {
             children: [
               const SizedBox(height: 26),
               Text(
-                'Scan',
+                label,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 11,
@@ -213,9 +232,17 @@ class _NavItem extends StatelessWidget {
     final color = selected ? AppColors.primary : AppColors.textSecondary;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      borderRadius: BorderRadius.circular(14),
+      splashColor: AppColors.primary.withValues(alpha: 0.08),
+      highlightColor: Colors.transparent,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primarySoft : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

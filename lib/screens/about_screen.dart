@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n_extensions.dart';
 import '../theme/app_theme.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -7,6 +8,8 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -15,23 +18,24 @@ class AboutScreen extends StatelessWidget {
           child: Column(
             children: [
               Image.asset(
-                'assets/branding/logo/logo.png',
-                height: 120,
+                'assets/branding/logo/logo-3-display.png',
+                width: double.infinity,
+                height: 96,
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Milk Mirror',
-                style: TextStyle(
+              Text(
+                l10n.appTitle,
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'AI Powered Dairy Analytics',
-                style: TextStyle(
+              Text(
+                l10n.aboutTagline,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.accentGold,
@@ -39,27 +43,26 @@ class AboutScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              const _AboutTile(
+              _AboutTile(
                 icon: Icons.visibility_outlined,
-                title: 'What we do',
-                body:
-                    'Analyze rear udder photos of buffalo to estimate daily milk production using on-device AI and Milk Mirror geometry.',
+                title: l10n.aboutWhatWeDo,
+                body: l10n.aboutWhatWeDoBody,
               ),
               const SizedBox(height: 12),
-              const _AboutTile(
+              _AboutTile(
                 icon: Icons.pets_outlined,
-                title: 'Built for',
-                body: 'Local / Desi buffalo — rear udder capture workflow.',
+                title: l10n.aboutBuiltFor,
+                body: l10n.aboutBuiltForBody,
               ),
               const SizedBox(height: 12),
-              const _AboutTile(
+              _AboutTile(
                 icon: Icons.info_outline,
-                title: 'Version',
+                title: l10n.aboutVersion,
                 body: '1.0.0',
               ),
               const SizedBox(height: 32),
               Text(
-                '© ${DateTime.now().year} Milk Mirror',
+                l10n.aboutCopyright(DateTime.now().year),
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,

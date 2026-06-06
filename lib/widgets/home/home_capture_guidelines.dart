@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../l10n/l10n_extensions.dart';
 import '../../theme/app_theme.dart';
 
 /// Capture tips with a rotating “live” highlight — shown on Home after Quick Insights.
@@ -13,34 +15,35 @@ class HomeCaptureGuidelines extends StatefulWidget {
 }
 
 class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
-  static const _tips = [
-    _CaptureTip(
-      icon: Icons.straighten_rounded,
-      text: 'Stand 3–5 feet behind the buffalo',
-    ),
-    _CaptureTip(
-      icon: Icons.height_rounded,
-      text: 'Keep camera at udder level',
-    ),
-    _CaptureTip(
-      icon: Icons.crop_free_rounded,
-      text: 'Capture full udder in frame',
-    ),
-    _CaptureTip(
-      icon: Icons.stay_current_portrait_rounded,
-      text: 'Use portrait mode',
-    ),
-    _CaptureTip(
-      icon: Icons.wb_sunny_outlined,
-      text: 'Ensure good lighting',
-    ),
-    _CaptureTip(
-      icon: Icons.cleaning_services_outlined,
-      text: 'Clean udder and tail area',
-    ),
-  ];
+  List<_CaptureTip> _tips(AppLocalizations l10n) => [
+        _CaptureTip(
+          icon: Icons.straighten_rounded,
+          text: l10n.guidelineStandBehind,
+        ),
+        _CaptureTip(
+          icon: Icons.height_rounded,
+          text: l10n.guidelineCameraLevel,
+        ),
+        _CaptureTip(
+          icon: Icons.crop_free_rounded,
+          text: l10n.guidelineFullUdder,
+        ),
+        _CaptureTip(
+          icon: Icons.stay_current_portrait_rounded,
+          text: l10n.guidelinePortrait,
+        ),
+        _CaptureTip(
+          icon: Icons.wb_sunny_outlined,
+          text: l10n.guidelineLighting,
+        ),
+        _CaptureTip(
+          icon: Icons.cleaning_services_outlined,
+          text: l10n.guidelineCleanUdder,
+        ),
+      ];
 
   static const _rotateInterval = Duration(seconds: 3);
+  static const _tipCount = 6;
 
   int _activeIndex = 0;
   Timer? _timer;
@@ -50,7 +53,7 @@ class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
     super.initState();
     _timer = Timer.periodic(_rotateInterval, (_) {
       if (!mounted) return;
-      setState(() => _activeIndex = (_activeIndex + 1) % _tips.length);
+      setState(() => _activeIndex = (_activeIndex + 1) % _tipCount);
     });
   }
 
@@ -62,7 +65,9 @@ class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
 
   @override
   Widget build(BuildContext context) {
-    final active = _tips[_activeIndex];
+    final l10n = context.l10n;
+    final tips = _tips(l10n);
+    final active = tips[_activeIndex];
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
@@ -99,22 +104,22 @@ class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Capture Guidelines',
-                          style: TextStyle(
+                          l10n.captureGuidelines,
+                          style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w800,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
-                          'Live tips while you scan',
-                          style: TextStyle(
+                          l10n.captureGuidelinesSub,
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,
                           ),
@@ -122,7 +127,7 @@ class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
                       ],
                     ),
                   ),
-                  _LiveBadge(),
+                  _LiveBadge(label: l10n.captureLive),
                 ],
               ),
             ),
@@ -133,7 +138,7 @@ class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
                 key: ValueKey(_activeIndex),
                 tip: active,
                 index: _activeIndex,
-                total: _tips.length,
+                total: tips.length,
               ),
             ),
             const SizedBox(height: 12),
@@ -142,7 +147,7 @@ class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
               child: Wrap(
                 spacing: 6,
                 runSpacing: 6,
-                children: List.generate(_tips.length, (i) {
+                children: List.generate(tips.length, (i) {
                   final selected = i == _activeIndex;
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
@@ -163,8 +168,8 @@ class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
               child: Column(
-                children: List.generate(_tips.length, (i) {
-                  final tip = _tips[i];
+                children: List.generate(tips.length, (i) {
+                  final tip = tips[i];
                   final highlighted = i == _activeIndex;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 6),
@@ -228,14 +233,14 @@ class _HomeCaptureGuidelinesState extends State<HomeCaptureGuidelines> {
                   color: AppColors.success.withValues(alpha: 0.25),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.verified_rounded, color: AppColors.success, size: 20),
-                  SizedBox(width: 10),
+                  const Icon(Icons.verified_rounded, color: AppColors.success, size: 20),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Clear Image = Better Prediction',
-                      style: TextStyle(
+                      l10n.captureTipClearImage,
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AppColors.success,
@@ -259,6 +264,10 @@ class _CaptureTip {
 }
 
 class _LiveBadge extends StatelessWidget {
+  const _LiveBadge({required this.label});
+
+  final String label;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -280,9 +289,9 @@ class _LiveBadge extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 5),
-          const Text(
-            'LIVE',
-            style: TextStyle(
+          Text(
+            label,
+            style: const TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.6,
@@ -309,6 +318,7 @@ class _LiveTipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 450),
       switchInCurve: Curves.easeOutCubic,
@@ -362,7 +372,7 @@ class _LiveTipCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tip ${index + 1} of $total',
+                    l10n.captureTipNofTotal(index + 1, total),
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,

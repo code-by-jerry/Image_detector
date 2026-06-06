@@ -90,7 +90,7 @@ class _HomeScanShowcaseState extends State<HomeScanShowcase>
               ),
               const SizedBox(height: 4),
               const Text(
-                'Rear udder views analyzed by Milk Mirror',
+                'Rear udder views analyzed by పాల Predictor',
                 style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
               const SizedBox(height: 14),
@@ -145,7 +145,7 @@ class _HomeScanShowcaseState extends State<HomeScanShowcase>
                                 ready ? AppColors.success : AppColors.warning,
                               ),
                               const Spacer(),
-                              _statusPill('MILK MIRROR', AppColors.primary),
+                              _statusPill('పాల PREDICTOR', AppColors.primary),
                             ],
                           ),
                         ),

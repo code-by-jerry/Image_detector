@@ -14,11 +14,13 @@ import 'glass_card.dart';
 class EnterpriseAiDashboard extends StatelessWidget {
   final DairyPipelineReport report;
   final String? sessionId;
+  final bool hideYieldHero;
 
   const EnterpriseAiDashboard({
     super.key,
     required this.report,
     this.sessionId,
+    this.hideYieldHero = false,
   });
 
   @override
@@ -28,8 +30,10 @@ class EnterpriseAiDashboard extends StatelessWidget {
       children: [
         _alertBanner(context),
         const SizedBox(height: 16),
-        _yieldHero(context),
-        const SizedBox(height: 16),
+        if (!hideYieldHero) ...[
+          _yieldHero(context),
+          const SizedBox(height: 16),
+        ],
         _metricsRow(context),
         const SizedBox(height: 16),
         _workflowSection(context),

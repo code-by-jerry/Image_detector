@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
@@ -28,6 +27,7 @@ import 'services/locale_service.dart';
 import 'services/model_status_store.dart';
 import 'services/milk_mirror_measurement_service.dart';
 import 'theme/app_theme.dart';
+import 'widgets/anatomy_escutcheon_debug.dart';
 import 'widgets/enterprise/ai_analysis_overlay.dart';
 import 'widgets/enterprise/enterprise_ai_dashboard.dart';
 import 'widgets/enterprise/enterprise_app_header.dart';
@@ -35,20 +35,13 @@ import 'widgets/enterprise/enterprise_capture_zone.dart';
 import 'widgets/enterprise/enterprise_measurement_card.dart';
 import 'widgets/enterprise/glass_card.dart';
 import 'widgets/enterprise/responsive_layout.dart';
+import 'widgets/enterprise/results_preview_stats_row.dart';
 import 'widgets/anatomy_overlay_layer.dart';
 import 'widgets/branding/branded_launch_splash.dart';
 import 'widgets/language_selector.dart';
 
-Future<void> main() async {
-  final binding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: binding);
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    debugPrint('Firebase init failed: $e');
-  }
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const ImageDetectorApp());
 }
 
@@ -82,6 +75,13 @@ class _ImageDetectorAppState extends State<ImageDetectorApp> {
   }
 
   Future<void> _bootstrapApp() async {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      debugPrint('Firebase init failed: $e');
+    }
     await _localeService.loadSavedLocale();
     await AnalysisHistoryStore.instance.loadFromDisk();
     final prefs = await SharedPreferences.getInstance();
@@ -91,7 +91,6 @@ class _ImageDetectorAppState extends State<ImageDetectorApp> {
       _showOnboarding = !completed;
       _appReady = true;
     });
-    FlutterNativeSplash.remove();
   }
 
   Future<void> _completeOnboarding() async {
@@ -114,7 +113,7 @@ class _ImageDetectorAppState extends State<ImageDetectorApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Milk Mirror',
+      title: 'పాల Predictor',
       theme: AppTheme.build(),
       locale: _localeService.locale,
       localizationsDelegates: const [
@@ -129,6 +128,7 @@ class _ImageDetectorAppState extends State<ImageDetectorApp> {
           : _showOnboarding
               ? _OnboardingScreen(onDone: _completeOnboarding)
               : AppShell(
+                  localeService: _localeService,
                   scanPageBuilder: (goHome, registerScan) {
                     return DetectorHomePage(
                       localeService: _localeService,
@@ -180,6 +180,7 @@ class _OnboardingScreenState extends State<_OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isLast = _index == _pages.length - 1;
     const primary = Color(0xFF556B2F);
     const textPrimary = Color(0xFF1F2937);
@@ -222,7 +223,7 @@ class _OnboardingScreenState extends State<_OnboardingScreen> {
                           vertical: 10,
                         ),
                         child: Text(
-                          'Skip',
+                          l10n.onboardingSkip,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -263,7 +264,7 @@ class _OnboardingScreenState extends State<_OnboardingScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              isLast ? 'Get Started' : 'Next',
+                              isLast ? l10n.onboardingGetStarted : l10n.onboardingNext,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -725,11 +726,6 @@ class DetectorHomePageState extends State<DetectorHomePage> {
                       const SizedBox(height: 12),
                       _buildDebugProfileForm(context),
                     ],
-                            if (!widget.headlessCapture ||
-                                _flowStage != _CaptureFlowStage.capture) ...[
-                              SizedBox(height: isWide ? 14 : 12),
-                              _buildFlowStepper(context, isWide),
-                            ],
                             SizedBox(height: isWide ? 16 : 12),
                             if (_flowStage == _CaptureFlowStage.capture) ...[
                               if (!widget.headlessCapture) ...[
@@ -745,7 +741,19 @@ class DetectorHomePageState extends State<DetectorHomePage> {
                               _buildReviewPanel(context, isWide),
                             ],
                             if (_flowStage == _CaptureFlowStage.results) ...[
-                              _buildCaptureSection(showOverlay: true),
+                              if (_prediction != null &&
+                                  _prediction!.pipeline != null)
+                                ResultsPreviewStatsRow(
+                                  imagePreview: _buildCaptureSection(
+                                    showOverlay: true,
+                                    resultsHero: true,
+                                  ),
+                                  report: _reportWithUserHealth(
+                                    _prediction!.pipeline!,
+                                  )!,
+                                )
+                              else
+                                _buildCaptureSection(showOverlay: true),
                               SizedBox(height: isWide ? 14 : 12),
                             ],
                     if (_error != null) ...[
@@ -761,6 +769,7 @@ class DetectorHomePageState extends State<DetectorHomePage> {
                         EnterpriseAiDashboard(
                           report: _reportWithUserHealth(_prediction!.pipeline!)!,
                           sessionId: _prediction!.diagnostics?.sessionId,
+                          hideYieldHero: true,
                         ),
                       if (_prediction!.milkMirror != null) ...[
                         const SizedBox(height: 12),
@@ -803,66 +812,6 @@ class DetectorHomePageState extends State<DetectorHomePage> {
             ),
         ],
       ),
-    );
-  }
-
-  Widget _buildFlowStepper(BuildContext context, bool isWide) {
-    final l10n = context.l10n;
-    return GlassCard(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      radius: 16,
-      child: Row(
-        children: [
-          _flowStepChip(1, l10n.flowCapture, _flowStage == _CaptureFlowStage.capture),
-          _flowConnector(),
-          _flowStepChip(2, l10n.flowReview, _flowStage == _CaptureFlowStage.review),
-          _flowConnector(),
-          _flowStepChip(3, l10n.flowResults, _flowStage == _CaptureFlowStage.results),
-        ],
-      ),
-    );
-  }
-
-  Widget _flowConnector() {
-    return Expanded(
-      child: Container(
-        height: 2,
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        color: AppColors.border,
-      ),
-    );
-  }
-
-  Widget _flowStepChip(int step, String label, bool active) {
-    return Column(
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active ? AppColors.primary : AppColors.primarySoft,
-            shape: BoxShape.circle,
-          ),
-          child: Text(
-            '$step',
-            style: TextStyle(
-              color: active ? Colors.white : AppColors.primary,
-              fontWeight: FontWeight.w800,
-              fontSize: 12,
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: active ? FontWeight.w800 : FontWeight.w500,
-            color: active ? AppColors.primary : AppColors.textSecondary,
-          ),
-        ),
-      ],
     );
   }
 
@@ -1125,7 +1074,10 @@ class DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildCaptureSection({required bool showOverlay}) {
+  Widget _buildCaptureSection({
+    required bool showOverlay,
+    bool resultsHero = false,
+  }) {
     final overlay = showOverlay &&
             _pickedImage != null &&
             _prediction != null &&
@@ -1141,6 +1093,7 @@ class DetectorHomePageState extends State<DetectorHomePage> {
       image: _pickedImage,
       modelReady: _isModelReady,
       overlay: overlay,
+      resultsHero: resultsHero,
     );
   }
 
@@ -2260,59 +2213,50 @@ class AnatomicalPainter extends CustomPainter {
 
     canvas.clipRect(ui.Rect.fromLTRB(0.0, 0.0, size.width, size.height));
 
-    final escutcheonPaint = Paint()
-      ..color = const Color(0xFFFFD54F)
-      ..strokeWidth = 2.5
-      ..style = PaintingStyle.stroke;
-
     final linePaint = Paint()
       ..color = Colors.greenAccent
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
     final fillPaint = Paint()
-      ..color = const Color(0xFF10B981).withValues(alpha: 0.12)
+      ..color = const Color(0xFF10B981).withValues(alpha: 0.10)
       ..style = PaintingStyle.fill;
 
     final leftPin = _pt(keypoints[0], size);
     final rightPin = _pt(keypoints[1], size);
     final udder = _pt(keypoints[2], size);
-    final spine = keypoints.length > 3 ? _pt(keypoints[3], size) : Offset((leftPin.dx + rightPin.dx) / 2, leftPin.dy - 40);
+    final tailHead = keypoints.length > 3
+        ? _pt(keypoints[3], size)
+        : Offset((leftPin.dx + rightPin.dx) / 2, leftPin.dy - 40);
 
-    final m = milkMirror;
-    final pointA = m?.pointA != null ? _pt(m!.pointA!, size) : spine;
-    final pointB = m?.pointB != null ? _pt(m!.pointB!, size) : udder;
-    final pointC = m?.pointC != null ? _pt(m!.pointC!, size) : Offset(leftPin.dx, (leftPin.dy + udder.dy) / 2);
-    final pointD = m?.pointD != null ? _pt(m!.pointD!, size) : Offset(rightPin.dx, (rightPin.dy + udder.dy) / 2);
-
-    // Escutcheon region (master diagram)
-    final escutcheonRect = ui.Rect.fromPoints(
-      Offset(pointC.dx, pointA.dy),
-      Offset(pointD.dx, pointB.dy),
+    paintEscutcheonDebugLayer(
+      canvas,
+      size,
+      metrics: milkMirror,
+      keypoints: keypoints,
     );
-    canvas.drawRect(escutcheonRect, fillPaint);
-    canvas.drawRect(escutcheonRect, escutcheonPaint);
 
-    // Height A–B on spine (midpoint of pin row)
-    final spineX = (pointC.dx + pointD.dx) / 2;
-    canvas.drawLine(
-      Offset(spineX, pointA.dy),
-      Offset(spineX, pointB.dy),
-      escutcheonPaint,
-    );
-    // Width C–D (horizontal)
-    canvas.drawLine(pointC, pointD, escutcheonPaint);
+    // Diamond: tail head → pins → udder center
+    final diamond = Path()
+      ..moveTo(tailHead.dx, tailHead.dy)
+      ..lineTo(leftPin.dx, leftPin.dy)
+      ..lineTo(udder.dx, udder.dy)
+      ..lineTo(rightPin.dx, rightPin.dy)
+      ..close();
+    canvas.drawPath(diamond, fillPaint);
+    canvas.drawPath(diamond, linePaint);
 
-    canvas.drawLine(spine, leftPin, linePaint);
-    canvas.drawLine(spine, rightPin, linePaint);
+    canvas.drawLine(tailHead, leftPin, linePaint);
+    canvas.drawLine(tailHead, rightPin, linePaint);
     canvas.drawLine(leftPin, udder, linePaint);
     canvas.drawLine(rightPin, udder, linePaint);
 
+    final pelvicW = (keypoints[1].dx - keypoints[0].dx).abs();
+    final udderH = (keypoints[2].dy - (keypoints.length > 3 ? keypoints[3].dy : keypoints[0].dy - 0.08)).abs();
+    final ratio = pelvicW > 0.01 ? udderH / pelvicW : 0.0;
+
     final anatomicalPoints = [
-      {'point': pointA, 'label': 'A', 'color': const Color(0xFFFFD54F)},
-      {'point': pointB, 'label': 'B', 'color': const Color(0xFFFFD54F)},
-      {'point': pointC, 'label': 'C', 'color': const Color(0xFFFFD54F)},
-      {'point': pointD, 'label': 'D', 'color': const Color(0xFFFFD54F)},
+      {'point': tailHead, 'label': 'Tail', 'color': const Color(0xFFFFD54F)},
       {'point': leftPin, 'label': leftPinLabel, 'color': Colors.redAccent},
       {'point': rightPin, 'label': rightPinLabel, 'color': Colors.redAccent},
       {'point': udder, 'label': udderLabel, 'color': Colors.blueAccent},
@@ -2323,14 +2267,10 @@ class AnatomicalPainter extends CustomPainter {
       final label = item['label'] as String;
       final color = item['color'] as Color;
 
-      // Outer glow
       canvas.drawCircle(point, 12, Paint()..color = color.withValues(alpha: 0.2)..style = PaintingStyle.fill);
-      // Middle ring
       canvas.drawCircle(point, 8, Paint()..color = color.withValues(alpha: 0.5)..style = PaintingStyle.fill);
-      // Inner dot
       canvas.drawCircle(point, 4, Paint()..color = color..style = PaintingStyle.fill);
 
-      // Draw labels
       final textPainter = TextPainter(
         text: TextSpan(
           text: label,
@@ -2347,27 +2287,24 @@ class AnatomicalPainter extends CustomPainter {
       textPainter.paint(canvas, Offset(point.dx - textPainter.width / 2, point.dy - 20));
     }
 
-    if (m != null) {
-      final measurementText =
-          'H: ${(m.heightNorm * 100).toStringAsFixed(0)}%  W: ${(m.widthNorm * 100).toStringAsFixed(0)}%';
-      final measurementPainter = TextPainter(
-        text: TextSpan(
-          text: measurementText,
-          style: const TextStyle(
-            color: Color(0xFFFFD54F),
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            shadows: [Shadow(blurRadius: 3, color: Colors.black)],
-          ),
+    final measurementText =
+        'Pel W: ${(pelvicW * 100).toStringAsFixed(0)}%  '
+        'Udd H: ${(udderH * 100).toStringAsFixed(0)}%  '
+        'Ratio: ${ratio.toStringAsFixed(2)}';
+    final measurementPainter = TextPainter(
+      text: TextSpan(
+        text: measurementText,
+        style: const TextStyle(
+          color: Color(0xFFFFD54F),
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          shadows: [Shadow(blurRadius: 3, color: Colors.black)],
         ),
-        textDirection: TextDirection.ltr,
-      );
-      measurementPainter.layout();
-      measurementPainter.paint(
-        canvas,
-        Offset(escutcheonRect.left + 4, escutcheonRect.top + 4),
-      );
-    }
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    measurementPainter.layout();
+    measurementPainter.paint(canvas, Offset(8, 8));
   }
 
   @override

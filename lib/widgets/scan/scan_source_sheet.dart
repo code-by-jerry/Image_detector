@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/l10n_extensions.dart';
 import '../../models/scan_actions.dart';
 import '../../services/sample_gallery_catalog.dart';
 import '../../theme/app_theme.dart';
@@ -47,6 +48,7 @@ class _ScanSourceSheetBodyState extends State<_ScanSourceSheetBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bottom = MediaQuery.paddingOf(context).bottom;
 
     return SafeArea(
@@ -67,31 +69,31 @@ class _ScanSourceSheetBodyState extends State<_ScanSourceSheetBody> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Choose photo source',
-              style: TextStyle(
+            Text(
+              l10n.choosePhotoSource,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Capture a new rear photo or pick from your device',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            Text(
+              l10n.choosePhotoSourceSub,
+              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 20),
             _SourceTile(
               icon: Icons.camera_alt_rounded,
-              title: 'Camera',
-              subtitle: 'Take a new photo',
+              title: l10n.camera,
+              subtitle: l10n.cameraSubtitle,
               onTap: () => Navigator.pop(context, const ScanSourceChoice.camera()),
             ),
             const SizedBox(height: 10),
             _SourceTile(
               icon: Icons.photo_library_rounded,
-              title: 'Gallery',
-              subtitle: 'Choose from device photos',
+              title: l10n.gallery,
+              subtitle: l10n.gallerySubtitle,
               onTap: () => Navigator.pop(context, const ScanSourceChoice.gallery()),
             ),
             if (_loadingSamples)
@@ -107,9 +109,9 @@ class _ScanSourceSheetBodyState extends State<_ScanSourceSheetBody> {
               )
             else if (_samples.isNotEmpty) ...[
               const SizedBox(height: 20),
-              const Text(
-                'Sample photos (bundled)',
-                style: TextStyle(
+              Text(
+                l10n.samplePhotosBundled,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,

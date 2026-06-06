@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/l10n_extensions.dart';
 import '../models/scan_actions.dart';
 import '../services/analysis_history_store.dart';
 import '../services/sample_gallery_catalog.dart';
@@ -47,6 +48,8 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       floatingActionButton: FloatingActionButton.extended(
@@ -54,13 +57,14 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_photo_alternate_outlined),
-        label: const Text('Add photo'),
+        label: Text(l10n.addPhoto),
       ),
       body: SafeArea(
         child: ListenableBuilder(
           listenable: AnalysisHistoryStore.instance,
           builder: (context, _) {
             final entries = AnalysisHistoryStore.instance.entries;
+            final sheetL10n = context.l10n;
 
             return CustomScrollView(
               slivers: [
@@ -69,10 +73,10 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Galleries',
-                            style: TextStyle(
+                            sheetL10n.galleriesTitle,
+                            style: const TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.w800,
                               color: AppColors.textPrimary,
@@ -82,7 +86,7 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
                         TextButton.icon(
                           onPressed: _openScanSheet,
                           icon: const Icon(Icons.document_scanner_outlined, size: 18),
-                          label: const Text('Scan'),
+                          label: Text(sheetL10n.navScan),
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.primary,
                           ),
@@ -99,12 +103,12 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
                     ),
                   )
                 else if (_samples.isNotEmpty) ...[
-                  const SliverToBoxAdapter(
+                  SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
                       child: Text(
-                        'Sample photos',
-                        style: TextStyle(
+                        sheetL10n.samplePhotos,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textPrimary,
@@ -147,10 +151,9 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: AppColors.border),
                         ),
-                        child: const Text(
-                          'Add photos under assets/images/ in the project, '
-                          'or use Gallery / Camera to pick from your device.',
-                          style: TextStyle(
+                        child: Text(
+                          sheetL10n.samplePhotosHint,
+                          style: const TextStyle(
                             fontSize: 13,
                             color: AppColors.textSecondary,
                             height: 1.4,
@@ -163,7 +166,7 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                     child: Text(
-                      'My scans (${entries.length})',
+                      sheetL10n.myScans(entries.length),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -173,12 +176,12 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
                   ),
                 ),
                 if (entries.isEmpty)
-                  const SliverToBoxAdapter(
+                  SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(20, 8, 20, 100),
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                       child: Text(
-                        'Completed AI analyses appear here after you scan.',
-                        style: TextStyle(
+                        sheetL10n.myScansEmpty,
+                        style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 14,
                         ),
@@ -192,7 +195,8 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
                       delegate: SliverChildBuilderDelegate(
                         (context, i) {
                           final e = entries[i];
-                          final date = DateFormat('MMM d, yyyy • hh:mm a')
+                          final locale = Localizations.localeOf(context).toString();
+                          final date = DateFormat('MMM d, yyyy • hh:mm a', locale)
                               .format(e.capturedAt);
                           final file = e.resolvedImageFile;
                           return Padding(
@@ -251,7 +255,9 @@ class _GalleriesScreenState extends State<GalleriesScreen> {
                                               ),
                                             ),
                                             Text(
-                                              '${e.litersPerDay.toStringAsFixed(1)} L/day',
+                                              sheetL10n.litersPerDayShort(
+                                                e.litersPerDay.toStringAsFixed(1),
+                                              ),
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w800,

@@ -1,0 +1,8 @@
+{
+  "trained": true,
+  "input_size": 256,
+  "val_iou": 0.0,
+  "train_samples": 73,
+  "val_samples": 13,
+  "exported_at": "2026-06-05T22:17:20.595643+00:00"
+}

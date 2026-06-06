@@ -1,10 +1,9 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 import '../services/milk_mirror_measurement_service.dart';
+import 'anatomy_escutcheon_debug.dart';
 
-/// Draws Milk Mirror landmarks on the fitted image rect (normalized 0–1 coords).
+/// Draws rear-view diamond landmarks (tail head, pins, udder center).
 class AnatomyOverlayPainter extends CustomPainter {
   final MilkMirrorUiMetrics? metrics;
   final List<Offset> fallbackKeypoints;
@@ -18,29 +17,22 @@ class AnatomyOverlayPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final m = metrics;
-    if (m == null ||
-        m.pointA == null ||
-        m.pointB == null ||
-        m.pointC == null ||
-        m.pointD == null) {
-      return;
-    }
+    final kps = fallbackKeypoints;
+    if (kps.length < 3) return;
 
-    final pointA = _pt(m.pointA!, size);
-    final pointB = _pt(m.pointB!, size);
-    final pointC = _pt(m.pointC!, size);
-    final pointD = _pt(m.pointD!, size);
+    final leftPin = _pt(kps[0], size);
+    final rightPin = _pt(kps[1], size);
+    final udder = _pt(kps[2], size);
+    final tailHead = kps.length > 3
+        ? _pt(kps[3], size)
+        : Offset((leftPin.dx + rightPin.dx) / 2, leftPin.dy - 40);
 
-    final leftPin = pointC;
-    final rightPin = pointD;
-    final udder = pointB;
-    final spine = pointA;
-
-    final escutcheonPaint = Paint()
-      ..color = const Color(0xFFFFD54F)
-      ..strokeWidth = 2.5
-      ..style = PaintingStyle.stroke;
+    paintEscutcheonDebugLayer(
+      canvas,
+      size,
+      metrics: metrics,
+      keypoints: kps,
+    );
 
     final linePaint = Paint()
       ..color = Colors.greenAccent
@@ -48,51 +40,44 @@ class AnatomyOverlayPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final fillPaint = Paint()
-      ..color = const Color(0xFF10B981).withValues(alpha: 0.12)
+      ..color = const Color(0xFF10B981).withValues(alpha: 0.10)
       ..style = PaintingStyle.fill;
 
-    // Escutcheon box: pins define width at hip row; A/B on spine midline.
-    final spineX = (pointC.dx + pointD.dx) / 2;
-    final escutcheonRect = ui.Rect.fromLTRB(
-      pointC.dx,
-      pointA.dy,
-      pointD.dx,
-      pointB.dy,
-    );
-    canvas.drawRect(escutcheonRect, fillPaint);
-    canvas.drawRect(escutcheonRect, escutcheonPaint);
+    final diamond = Path()
+      ..moveTo(tailHead.dx, tailHead.dy)
+      ..lineTo(leftPin.dx, leftPin.dy)
+      ..lineTo(udder.dx, udder.dy)
+      ..lineTo(rightPin.dx, rightPin.dy)
+      ..close();
+    canvas.drawPath(diamond, fillPaint);
+    canvas.drawPath(diamond, linePaint);
 
-    canvas.drawLine(Offset(spineX, pointA.dy), Offset(spineX, pointB.dy), escutcheonPaint);
-    canvas.drawLine(pointC, pointD, escutcheonPaint);
-
-    canvas.drawLine(spine, leftPin, linePaint);
-    canvas.drawLine(spine, rightPin, linePaint);
-    canvas.drawLine(leftPin, udder, linePaint);
-    canvas.drawLine(rightPin, udder, linePaint);
-
-    _drawMarker(canvas, pointA, 'A', const Color(0xFFFFD54F));
-    _drawMarker(canvas, pointB, 'B', const Color(0xFFFFD54F));
-    _drawMarker(canvas, pointC, 'C', const Color(0xFFFFD54F));
-    _drawMarker(canvas, pointD, 'D', const Color(0xFFFFD54F));
+    _drawMarker(canvas, tailHead, 'Tail', const Color(0xFFFFD54F));
     _drawMarker(canvas, leftPin, 'L Pin', Colors.redAccent);
     _drawMarker(canvas, rightPin, 'R Pin', Colors.redAccent);
     _drawMarker(canvas, udder, 'Udder', Colors.blueAccent);
 
+    final pelvicW = (kps[1].dx - kps[0].dx).abs();
+    final udderH = (kps[2].dy - (kps.length > 3 ? kps[3].dy : kps[0].dy - 0.08)).abs();
+    final ratio = pelvicW > 0.01 ? udderH / pelvicW : 0.0;
+
     final measurementText =
-        'H: ${(m.heightNorm * 100).toStringAsFixed(0)}%  W: ${(m.widthNorm * 100).toStringAsFixed(0)}%';
+        'Pel W: ${(pelvicW * 100).toStringAsFixed(0)}%  '
+        'Udd H: ${(udderH * 100).toStringAsFixed(0)}%  '
+        'Ratio: ${ratio.toStringAsFixed(2)}';
     final tp = TextPainter(
       text: TextSpan(
         text: measurementText,
         style: const TextStyle(
           color: Color(0xFFFFD54F),
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: FontWeight.bold,
           shadows: [Shadow(blurRadius: 3, color: Colors.black)],
         ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
-    tp.paint(canvas, Offset(escutcheonRect.left + 4, escutcheonRect.top + 4));
+    tp.paint(canvas, const Offset(4, 4));
   }
 
   void _drawMarker(Canvas canvas, Offset point, String label, Color color) {

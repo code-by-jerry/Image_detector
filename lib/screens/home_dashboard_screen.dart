@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/l10n_extensions.dart';
+import '../l10n/report_localizer.dart';
 import '../services/analysis_history_store.dart';
+import '../services/locale_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/home/home_capture_guidelines.dart';
 import '../widgets/home/home_hero_banner.dart';
+import '../widgets/language_selector.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   const HomeDashboardScreen({
     super.key,
     required this.onScanTap,
     required this.onViewAllGalleries,
+    required this.localeService,
   });
 
   final VoidCallback onScanTap;
   final VoidCallback onViewAllGalleries;
+  final LocaleService localeService;
 
   @override
   State<HomeDashboardScreen> createState() => _HomeDashboardScreenState();
@@ -29,6 +35,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
         final latest = AnalysisHistoryStore.instance.latest;
         final recent = AnalysisHistoryStore.instance.entries.take(4).toList();
 
+        final l10n = context.l10n;
+
         return SafeArea(
           child: CustomScrollView(
             slivers: [
@@ -37,7 +45,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: _sectionTitle('Latest Prediction', widget.onViewAllGalleries),
+                  child: _sectionTitle(l10n.latestPrediction, widget.onViewAllGalleries),
                 ),
               ),
               SliverToBoxAdapter(
@@ -48,12 +56,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       : _EmptyPredictionCard(onScan: widget.onScanTap),
                 ),
               ),
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 24, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
                   child: Text(
-                    'Quick Insights',
-                    style: TextStyle(
+                    l10n.quickInsights,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
@@ -61,12 +69,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   ),
                 ),
               ),
-              SliverToBoxAdapter(child: _buildQuickInsights(latest != null)),
+              SliverToBoxAdapter(child: _buildQuickInsights(context, latest != null)),
               const SliverToBoxAdapter(child: HomeCaptureGuidelines()),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                  child: _sectionTitle('Recent Analyses', widget.onViewAllGalleries),
+                  child: _sectionTitle(l10n.recentAnalyses, widget.onViewAllGalleries),
                 ),
               ),
               SliverPadding(
@@ -113,11 +121,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('View all', style: TextStyle(fontWeight: FontWeight.w600)),
-              Icon(Icons.chevron_right, size: 18),
+              Text(context.l10n.viewAll, style: const TextStyle(fontWeight: FontWeight.w600)),
+              const Icon(Icons.chevron_right, size: 18),
             ],
           ),
         ),
@@ -141,50 +149,28 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           Expanded(
             child: Center(
               child: Image.asset(
-                'assets/branding/logo/logo-2.png',
-                height: 36,
+                'assets/branding/logo/logo-3-display.png',
+                height: 34,
                 fit: BoxFit.contain,
               ),
             ),
           ),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.smart_toy_outlined,
-                  color: AppColors.textPrimary,
-                  size: 26,
-                ),
-                tooltip: 'AI Assistant',
-              ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  width: 9,
-                  height: 9,
-                  decoration: BoxDecoration(
-                    color: AppColors.success,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.surface, width: 1.5),
-                  ),
-                ),
-              ),
-            ],
+          LanguageSelector(
+            localeService: widget.localeService,
+            compact: true,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQuickInsights(bool hasData) {
+  Widget _buildQuickInsights(BuildContext context, bool hasData) {
+    final l10n = context.l10n;
     final items = [
-      _InsightItem(Icons.health_and_safety_outlined, 'Udder Health', hasData ? 'Good' : '—'),
-      _InsightItem(Icons.water_drop_outlined, 'Symmetry', hasData ? 'Good' : '—'),
-      _InsightItem(Icons.favorite_border_rounded, 'Body Condition', hasData ? 'Good' : '—'),
-      _InsightItem(Icons.thermostat_outlined, 'Heat Stress', hasData ? 'Low' : '—'),
+      _InsightItem(Icons.health_and_safety_outlined, l10n.insightUdderHealth, hasData ? l10n.statusGood : l10n.statusDash),
+      _InsightItem(Icons.water_drop_outlined, l10n.insightSymmetry, hasData ? l10n.statusGood : l10n.statusDash),
+      _InsightItem(Icons.favorite_border_rounded, l10n.insightBodyCondition, hasData ? l10n.statusGood : l10n.statusDash),
+      _InsightItem(Icons.thermostat_outlined, l10n.insightHeatStress, hasData ? l10n.statusLow : l10n.statusDash),
     ];
 
     return Padding(
@@ -262,7 +248,9 @@ class _LatestPredictionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = DateFormat('MMM d, yyyy • hh:mm a').format(entry.capturedAt);
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toString();
+    final date = DateFormat('MMM d, yyyy • hh:mm a', locale).format(entry.capturedAt);
     final confPct = (entry.confidence * 100).clamp(0, 100).toStringAsFixed(0);
 
     return Container(
@@ -313,16 +301,16 @@ class _LatestPredictionCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
-                      'Estimated Daily Milk Yield',
-                      style: TextStyle(
+                    Text(
+                      l10n.estimatedDailyMilkYield,
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,
                       ),
                     ),
                     Text(
-                      '${entry.litersPerDay.toStringAsFixed(1)} L/day',
+                      l10n.litersPerDayShort(entry.litersPerDay.toStringAsFixed(1)),
                       style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
@@ -339,15 +327,15 @@ class _LatestPredictionCard extends StatelessWidget {
                         color: AppColors.successSoft,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.star_rounded,
+                          const Icon(Icons.star_rounded,
                               size: 14, color: AppColors.success),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            'High Yield Potential',
-                            style: TextStyle(
+                            l10n.highYieldPotential,
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               color: AppColors.success,
@@ -368,9 +356,9 @@ class _LatestPredictionCard extends StatelessWidget {
           ),
           Row(
             children: [
-              const Text(
-                'Health Status',
-                style: TextStyle(
+              Text(
+                l10n.healthStatus,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
@@ -392,6 +380,7 @@ class _ConfidenceRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return SizedBox(
       width: 64,
       height: 64,
@@ -419,9 +408,9 @@ class _ConfidenceRing extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const Text(
-                'Confidence',
-                style: TextStyle(fontSize: 8, color: AppColors.textSecondary),
+              Text(
+                l10n.confidence,
+                style: const TextStyle(fontSize: 8, color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -438,6 +427,7 @@ class _HealthBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayLabel = ReportLocalizer.of(context).text(label);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -454,7 +444,7 @@ class _HealthBadge extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            label,
+            displayLabel,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -473,6 +463,7 @@ class _EmptyPredictionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -485,24 +476,24 @@ class _EmptyPredictionCard extends StatelessWidget {
           const Icon(Icons.document_scanner_outlined,
               size: 48, color: AppColors.primary),
           const SizedBox(height: 12),
-          const Text(
-            'No predictions yet',
-            style: TextStyle(
+          Text(
+            l10n.noPredictionsYet,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Tap Scan to capture a rear udder photo and get your first yield estimate.',
+          Text(
+            l10n.noPredictionsHint,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 16),
           FilledButton(
             onPressed: onScan,
-            child: const Text('Start Scan'),
+            child: Text(l10n.startScan),
           ),
         ],
       ),
@@ -524,7 +515,7 @@ class _EmptyRecentCard extends StatelessWidget {
         border: Border.all(color: AppColors.border),
       ),
       child: Text(
-        'Your recent analyses will appear here after scanning.',
+        context.l10n.emptyRecentHint,
         textAlign: TextAlign.center,
         style: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.9)),
       ),
@@ -538,7 +529,9 @@ class _RecentRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = DateFormat('MMM d, yyyy • hh:mm a').format(entry.capturedAt);
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toString();
+    final date = DateFormat('MMM d, yyyy • hh:mm a', locale).format(entry.capturedAt);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -579,7 +572,7 @@ class _RecentRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${entry.litersPerDay.toStringAsFixed(1)} L/day',
+                  l10n.litersPerDayShort(entry.litersPerDay.toStringAsFixed(1)),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,

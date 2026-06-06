@@ -25,20 +25,14 @@ void main() {
   });
 
   testWidgets(
-    'Detector app renders Milk Mirror home',
+    'Detector app renders పాల Predictor splash',
     (WidgetTester tester) async {
       await tester.pumpWidget(const ImageDetectorApp());
       await tester.pump();
-      // Model init + header/carousel animations (flutter_animate).
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump();
 
-      expect(find.text('MILK MIRROR'), findsOneWidget);
-      expect(
-        find.textContaining('BOOTING AI').evaluate().isNotEmpty ||
-            find.textContaining('AI ONLINE').evaluate().isNotEmpty,
-        isTrue,
-      );
+      expect(find.byType(Image), findsWidgets);
 
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump();

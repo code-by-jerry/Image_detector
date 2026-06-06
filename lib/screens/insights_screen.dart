@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n_extensions.dart';
+import '../l10n/report_localizer.dart';
 import '../services/analysis_history_store.dart';
 import '../theme/app_theme.dart';
 
@@ -14,6 +16,7 @@ class InsightsScreen extends StatelessWidget {
         child: ListenableBuilder(
           listenable: AnalysisHistoryStore.instance,
           builder: (context, _) {
+            final l10n = context.l10n;
             final latest = AnalysisHistoryStore.instance.latest;
             final count = AnalysisHistoryStore.instance.entries.length;
 
@@ -22,43 +25,43 @@ class InsightsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Insights',
-                    style: TextStyle(
+                  Text(
+                    l10n.insightsTitle,
+                    style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Summary from your recent Milk Mirror analyses.',
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                  Text(
+                    l10n.insightsSubtitle,
+                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
                   ),
                   const SizedBox(height: 24),
                   _StatCard(
                     icon: Icons.analytics_outlined,
-                    title: 'Total scans',
+                    title: l10n.totalScans,
                     value: '$count',
                   ),
                   const SizedBox(height: 12),
                   if (latest != null) ...[
                     _StatCard(
                       icon: Icons.water_drop_outlined,
-                      title: 'Latest yield',
-                      value: '${latest.litersPerDay.toStringAsFixed(1)} L/day',
+                      title: l10n.latestYield,
+                      value: l10n.litersPerDayShort(latest.litersPerDay.toStringAsFixed(1)),
                     ),
                     const SizedBox(height: 12),
                     _StatCard(
                       icon: Icons.verified_outlined,
-                      title: 'Latest confidence',
+                      title: l10n.latestConfidence,
                       value: '${(latest.confidence * 100).toStringAsFixed(0)}%',
                     ),
                     const SizedBox(height: 12),
                     _StatCard(
                       icon: Icons.favorite_outline,
-                      title: 'Health status',
-                      value: latest.healthStatus,
+                      title: l10n.healthStatus,
+                      value: ReportLocalizer.of(context).text(latest.healthStatus),
                     ),
                   ] else
                     Container(
@@ -69,9 +72,9 @@ class InsightsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: AppColors.border),
                       ),
-                      child: const Text(
-                        'Run a scan to unlock personalized dairy insights.',
-                        style: TextStyle(color: AppColors.textSecondary),
+                      child: Text(
+                        l10n.insightsEmpty,
+                        style: const TextStyle(color: AppColors.textSecondary),
                       ),
                     ),
                 ],

@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Milk Mirror'**
+  /// **'పాల Predictor'**
   String get appTitle;
 
   /// No description provided for @languageLabel.
@@ -313,7 +313,7 @@ abstract class AppLocalizations {
   /// No description provided for @engineMilkMirrorTflite.
   ///
   /// In en, this message translates to:
-  /// **'Milk Mirror + AI'**
+  /// **'పాల Predictor + AI'**
   String get engineMilkMirrorTflite;
 
   /// No description provided for @engineTflite.
@@ -403,7 +403,7 @@ abstract class AppLocalizations {
   /// No description provided for @showcaseMilkMirror.
   ///
   /// In en, this message translates to:
-  /// **'MILK MIRROR'**
+  /// **'పాల PREDICTOR'**
   String get showcaseMilkMirror;
 
   /// No description provided for @showcaseBuffaloRearTitle.
@@ -643,7 +643,7 @@ abstract class AppLocalizations {
   /// No description provided for @milkMirrorAnalysis.
   ///
   /// In en, this message translates to:
-  /// **'Milk Mirror Analysis'**
+  /// **'పాల Predictor Analysis'**
   String get milkMirrorAnalysis;
 
   /// No description provided for @measured.
@@ -841,7 +841,7 @@ abstract class AppLocalizations {
   /// No description provided for @proofMilkMirrorUi.
   ///
   /// In en, this message translates to:
-  /// **'Milk Mirror (UI):'**
+  /// **'పాల Predictor (UI):'**
   String get proofMilkMirrorUi;
 
   /// No description provided for @proofHeightAb.
@@ -877,7 +877,7 @@ abstract class AppLocalizations {
   /// No description provided for @badgeMilkMirrorMeasurement.
   ///
   /// In en, this message translates to:
-  /// **'MILK MIRROR MEASUREMENT'**
+  /// **'పాల PREDICTOR MEASUREMENT'**
   String get badgeMilkMirrorMeasurement;
 
   /// No description provided for @badgeAiModelTflite.
@@ -1165,7 +1165,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepRearPhoto.
   ///
   /// In en, this message translates to:
-  /// **'Rear milk-mirror photo'**
+  /// **'Rear udder photo'**
   String get stepRearPhoto;
 
   /// No description provided for @stepAnimalDetection.
@@ -1261,7 +1261,7 @@ abstract class AppLocalizations {
   /// No description provided for @alertHighConfidence.
   ///
   /// In en, this message translates to:
-  /// **'High-confidence milk mirror analysis'**
+  /// **'High-confidence పాల Predictor analysis'**
   String get alertHighConfidence;
 
   /// No description provided for @tipHighConfidence.
@@ -1299,6 +1299,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Udder'**
   String get overlayUdder;
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navGalleries.
+  ///
+  /// In en, this message translates to:
+  /// **'Galleries'**
+  String get navGalleries;
+
+  /// No description provided for @navScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan'**
+  String get navScan;
+
+  /// No description provided for @navInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get navInsights;
+
+  /// No description provided for @navAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get navAbout;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @latestPrediction.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Prediction'**
+  String get latestPrediction;
+
+  /// No description provided for @quickInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Insights'**
+  String get quickInsights;
+
+  /// No description provided for @recentAnalyses.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Analyses'**
+  String get recentAnalyses;
+
+  /// No description provided for @insightUdderHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Udder Health'**
+  String get insightUdderHealth;
+
+  /// No description provided for @insightSymmetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Symmetry'**
+  String get insightSymmetry;
+
+  /// No description provided for @insightBodyCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Body Condition'**
+  String get insightBodyCondition;
+
+  /// No description provided for @insightHeatStress.
+  ///
+  /// In en, this message translates to:
+  /// **'Heat Stress'**
+  String get insightHeatStress;
+
+  /// No description provided for @statusGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get statusGood;
+
+  /// No description provided for @statusLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get statusLow;
+
+  /// No description provided for @statusDash.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get statusDash;
+
+  /// No description provided for @estimatedDailyMilkYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Daily Milk Yield'**
+  String get estimatedDailyMilkYield;
+
+  /// No description provided for @highYieldPotential.
+  ///
+  /// In en, this message translates to:
+  /// **'High Yield Potential'**
+  String get highYieldPotential;
+
+  /// No description provided for @healthStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Status'**
+  String get healthStatus;
+
+  /// No description provided for @confidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Confidence'**
+  String get confidence;
+
+  /// No description provided for @noPredictionsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No predictions yet'**
+  String get noPredictionsYet;
+
+  /// No description provided for @noPredictionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Scan to capture a rear udder photo and get your first yield estimate.'**
+  String get noPredictionsHint;
+
+  /// No description provided for @startScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Scan'**
+  String get startScan;
+
+  /// No description provided for @emptyRecentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recent analyses will appear here after scanning.'**
+  String get emptyRecentHint;
+
+  /// No description provided for @galleriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Galleries'**
+  String get galleriesTitle;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get addPhoto;
+
+  /// No description provided for @samplePhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample photos'**
+  String get samplePhotos;
+
+  /// No description provided for @samplePhotosHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photos under assets/images/ in the project, then rebuild the app.'**
+  String get samplePhotosHint;
+
+  /// No description provided for @myScans.
+  ///
+  /// In en, this message translates to:
+  /// **'My scans ({count})'**
+  String myScans(int count);
+
+  /// No description provided for @myScansEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed AI analyses appear here after you scan.'**
+  String get myScansEmpty;
+
+  /// No description provided for @insightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insightsTitle;
+
+  /// No description provided for @insightsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary from your recent పాల Predictor analyses.'**
+  String get insightsSubtitle;
+
+  /// No description provided for @totalScans.
+  ///
+  /// In en, this message translates to:
+  /// **'Total scans'**
+  String get totalScans;
+
+  /// No description provided for @latestYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest yield'**
+  String get latestYield;
+
+  /// No description provided for @latestConfidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest confidence'**
+  String get latestConfidence;
+
+  /// No description provided for @insightsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Run a scan to unlock personalized dairy insights.'**
+  String get insightsEmpty;
+
+  /// No description provided for @aboutTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Powered Dairy Analytics'**
+  String get aboutTagline;
+
+  /// No description provided for @aboutWhatWeDo.
+  ///
+  /// In en, this message translates to:
+  /// **'What we do'**
+  String get aboutWhatWeDo;
+
+  /// No description provided for @aboutWhatWeDoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze rear udder photos of buffalo to estimate daily milk production using on-device AI and escutcheon geometry.'**
+  String get aboutWhatWeDoBody;
+
+  /// No description provided for @aboutBuiltFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Built for'**
+  String get aboutBuiltFor;
+
+  /// No description provided for @aboutBuiltForBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Local / Desi buffalo — rear udder capture workflow.'**
+  String get aboutBuiltForBody;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get aboutVersion;
+
+  /// No description provided for @aboutCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© {year} పాల Predictor'**
+  String aboutCopyright(int year);
+
+  /// No description provided for @choosePhotoSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo source'**
+  String get choosePhotoSource;
+
+  /// No description provided for @choosePhotoSourceSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture a new rear photo or pick from your device'**
+  String get choosePhotoSourceSub;
+
+  /// No description provided for @cameraSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a new photo'**
+  String get cameraSubtitle;
+
+  /// No description provided for @gallerySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from device photos'**
+  String get gallerySubtitle;
+
+  /// No description provided for @samplePhotosBundled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample photos (bundled)'**
+  String get samplePhotosBundled;
+
+  /// No description provided for @captureGuidelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture Guidelines'**
+  String get captureGuidelines;
+
+  /// No description provided for @captureGuidelinesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Live tips while you scan'**
+  String get captureGuidelinesSub;
+
+  /// No description provided for @captureTipClearImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Image = Better Prediction'**
+  String get captureTipClearImage;
+
+  /// No description provided for @captureLive.
+  ///
+  /// In en, this message translates to:
+  /// **'LIVE'**
+  String get captureLive;
+
+  /// No description provided for @captureTipNofTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip {current} of {total}'**
+  String captureTipNofTotal(int current, int total);
+
+  /// No description provided for @guidelineStandBehind.
+  ///
+  /// In en, this message translates to:
+  /// **'Stand 3–5 feet behind the buffalo'**
+  String get guidelineStandBehind;
+
+  /// No description provided for @guidelineCameraLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep camera at udder level'**
+  String get guidelineCameraLevel;
+
+  /// No description provided for @guidelineFullUdder.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture full udder in frame'**
+  String get guidelineFullUdder;
+
+  /// No description provided for @guidelinePortrait.
+  ///
+  /// In en, this message translates to:
+  /// **'Use portrait mode'**
+  String get guidelinePortrait;
+
+  /// No description provided for @guidelineLighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Ensure good lighting'**
+  String get guidelineLighting;
+
+  /// No description provided for @guidelineCleanUdder.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean udder and tail area'**
+  String get guidelineCleanUdder;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get onboardingGetStarted;
+
+  /// No description provided for @litersPerDayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{liters} L/day'**
+  String litersPerDayShort(String liters);
 }
 
 class _AppLocalizationsDelegate

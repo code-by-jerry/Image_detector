@@ -1,0 +1,751 @@
+{
+  "samples": 74,
+  "mae_l": 1.14,
+  "rmse_l": 1.47,
+  "within_1l_pct": 54.1,
+  "within_2l_pct": 78.4,
+  "band_accuracy_pct": 32.4,
+  "calibration_used": true,
+  "rows": [
+    {
+      "path": "images\\animal photos\\10 lit\\k1 (2).jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.36,
+      "error_l": 2.64,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\k1.jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.45,
+      "error_l": 2.55,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\k2 (2).jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.22,
+      "error_l": 2.78,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\k2.jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.23,
+      "error_l": 2.77,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\k3 (2).jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.08,
+      "error_l": 2.92,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\k3.jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.17,
+      "error_l": 2.83,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\k4 (2).jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.96,
+      "error_l": 2.04,
+      "band_actual": "10_lit",
+      "band_pred": "8_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\k4.jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.6,
+      "error_l": 2.4,
+      "band_actual": "10_lit",
+      "band_pred": "8_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\w1 (2).jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.52,
+      "error_l": 2.48,
+      "band_actual": "10_lit",
+      "band_pred": "8_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\w1.jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.46,
+      "error_l": 2.54,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\w2 (2).jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.43,
+      "error_l": 2.57,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\w2.jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.22,
+      "error_l": 2.78,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\w3 (2).jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 6.53,
+      "error_l": 3.47,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\10 lit\\w3.jpg",
+      "folder": "10 lit",
+      "actual_l": 10.0,
+      "predicted_l": 7.44,
+      "error_l": 2.56,
+      "band_actual": "10_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\k1 (2).jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 6.94,
+      "error_l": 0.94,
+      "band_actual": "6_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\k1.jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 7.56,
+      "error_l": 1.56,
+      "band_actual": "6_lit",
+      "band_pred": "8_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\k2 (2).jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 7.0,
+      "error_l": 1.0,
+      "band_actual": "6_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\k2.jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 7.36,
+      "error_l": 1.36,
+      "band_actual": "6_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\k3 (2).jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 6.93,
+      "error_l": 0.93,
+      "band_actual": "6_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\k3.jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 6.04,
+      "error_l": 0.04,
+      "band_actual": "6_lit",
+      "band_pred": "6_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\w1 (2).jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 7.12,
+      "error_l": 1.12,
+      "band_actual": "6_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\w1.jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 7.15,
+      "error_l": 1.15,
+      "band_actual": "6_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\w2 (2).jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 4.89,
+      "error_l": 1.11,
+      "band_actual": "6_lit",
+      "band_pred": "5_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\6 lit\\w2.jpg",
+      "folder": "6 lit",
+      "actual_l": 6.0,
+      "predicted_l": 7.04,
+      "error_l": 1.04,
+      "band_actual": "6_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k1 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 6.31,
+      "error_l": 0.69,
+      "band_actual": "7_lit",
+      "band_pred": "6_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k1.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.58,
+      "error_l": 0.58,
+      "band_actual": "7_lit",
+      "band_pred": "8_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k2 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.39,
+      "error_l": 0.39,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k2.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.18,
+      "error_l": 0.18,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k3 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 6.91,
+      "error_l": 0.09,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k3.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.03,
+      "error_l": 0.03,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k4 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.23,
+      "error_l": 0.23,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k4.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 6.89,
+      "error_l": 0.11,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k5 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.06,
+      "error_l": 0.06,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k5.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.11,
+      "error_l": 0.11,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k6 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 6.65,
+      "error_l": 0.35,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\k6.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 6.68,
+      "error_l": 0.32,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w1 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.06,
+      "error_l": 0.06,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w1.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.03,
+      "error_l": 0.03,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w2 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 6.97,
+      "error_l": 0.03,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w2.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.0,
+      "error_l": 0.0,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w3 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.14,
+      "error_l": 0.14,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w3.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.08,
+      "error_l": 0.08,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w4 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.43,
+      "error_l": 0.43,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w4.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.43,
+      "error_l": 0.43,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w5 (2).jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.24,
+      "error_l": 0.24,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\7 lit\\w5.jpg",
+      "folder": "7 lit",
+      "actual_l": 7.0,
+      "predicted_l": 7.35,
+      "error_l": 0.35,
+      "band_actual": "7_lit",
+      "band_pred": "7_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k1 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.1,
+      "error_l": 0.9,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k1.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 6.97,
+      "error_l": 1.03,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k2 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.31,
+      "error_l": 0.69,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k2.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.48,
+      "error_l": 0.52,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k3 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.04,
+      "error_l": 0.96,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k3.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 6.88,
+      "error_l": 1.12,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k4 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.35,
+      "error_l": 0.65,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k4.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.56,
+      "error_l": 0.44,
+      "band_actual": "8_lit",
+      "band_pred": "8_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k5 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 6.86,
+      "error_l": 1.14,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k5.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 6.99,
+      "error_l": 1.01,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k6 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.1,
+      "error_l": 0.9,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\k6.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 6.53,
+      "error_l": 1.47,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\w1 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.14,
+      "error_l": 0.86,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\w1.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.16,
+      "error_l": 0.84,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\w2 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 8.09,
+      "error_l": 0.09,
+      "band_actual": "8_lit",
+      "band_pred": "8_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\w2.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.5,
+      "error_l": 0.5,
+      "band_actual": "8_lit",
+      "band_pred": "8_lit",
+      "band_match": true
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\w3 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.38,
+      "error_l": 0.62,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\w3.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.14,
+      "error_l": 0.86,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\w4 (2).jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 7.13,
+      "error_l": 0.87,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\8 lit\\w4.jpg",
+      "folder": "8 lit",
+      "actual_l": 8.0,
+      "predicted_l": 6.87,
+      "error_l": 1.13,
+      "band_actual": "8_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\9 lit\\k1 (2).jpg",
+      "folder": "9 lit",
+      "actual_l": 9.0,
+      "predicted_l": 7.08,
+      "error_l": 1.92,
+      "band_actual": "9_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\9 lit\\k1.jpg",
+      "folder": "9 lit",
+      "actual_l": 9.0,
+      "predicted_l": 7.06,
+      "error_l": 1.94,
+      "band_actual": "9_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\9 lit\\k2 (2).jpg",
+      "folder": "9 lit",
+      "actual_l": 9.0,
+      "predicted_l": 7.06,
+      "error_l": 1.94,
+      "band_actual": "9_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\9 lit\\k2.jpg",
+      "folder": "9 lit",
+      "actual_l": 9.0,
+      "predicted_l": 7.02,
+      "error_l": 1.98,
+      "band_actual": "9_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\9 lit\\k3 (2).jpg",
+      "folder": "9 lit",
+      "actual_l": 9.0,
+      "predicted_l": 7.33,
+      "error_l": 1.67,
+      "band_actual": "9_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\9 lit\\k3.jpg",
+      "folder": "9 lit",
+      "actual_l": 9.0,
+      "predicted_l": 6.61,
+      "error_l": 2.39,
+      "band_actual": "9_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\9 lit\\w1 (2).jpg",
+      "folder": "9 lit",
+      "actual_l": 9.0,
+      "predicted_l": 6.95,
+      "error_l": 2.05,
+      "band_actual": "9_lit",
+      "band_pred": "7_lit",
+      "band_match": false
+    },
+    {
+      "path": "images\\animal photos\\9 lit\\w1.jpg",
+      "folder": "9 lit",
+      "actual_l": 9.0,
+      "predicted_l": 7.66,
+      "error_l": 1.34,
+      "band_actual": "9_lit",
+      "band_pred": "8_lit",
+      "band_match": false
+    }
+  ]
+}
