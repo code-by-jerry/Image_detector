@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Milk Mirror';
+  String get appTitle => 'పాల Predictor';
 
   @override
   String get languageLabel => 'Language';
@@ -123,7 +123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get engineMilkMirror => 'Pin bones + escutcheon (A–B, C–D)';
 
   @override
-  String get engineMilkMirrorTflite => 'Milk Mirror + AI';
+  String get engineMilkMirrorTflite => 'పాల Predictor + AI';
 
   @override
   String get engineTflite => 'TFLite AI';
@@ -169,7 +169,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showcaseBootingAi => 'BOOTING AI';
 
   @override
-  String get showcaseMilkMirror => 'MILK MIRROR';
+  String get showcaseMilkMirror => 'పాల PREDICTOR';
 
   @override
   String get showcaseBuffaloRearTitle => 'Buffalo rear';
@@ -297,7 +297,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get metricSymmetry => 'Symmetry %';
 
   @override
-  String get milkMirrorAnalysis => 'Milk Mirror Analysis';
+  String get milkMirrorAnalysis => 'పాల Predictor Analysis';
 
   @override
   String get measured => 'MEASURED';
@@ -407,7 +407,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proofFail => 'FAIL';
 
   @override
-  String get proofMilkMirrorUi => 'Milk Mirror (UI):';
+  String get proofMilkMirrorUi => 'పాల Predictor (UI):';
 
   @override
   String get proofHeightAb => 'Height A→B';
@@ -425,7 +425,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proofAllClassScores => 'All class scores:';
 
   @override
-  String get badgeMilkMirrorMeasurement => 'MILK MIRROR MEASUREMENT';
+  String get badgeMilkMirrorMeasurement => 'పాల PREDICTOR MEASUREMENT';
 
   @override
   String get badgeAiModelTflite => 'AI MODEL (TFLite)';
@@ -579,7 +579,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepCaptureImage => 'Capture image';
 
   @override
-  String get stepRearPhoto => 'Rear milk-mirror photo';
+  String get stepRearPhoto => 'Rear udder photo';
 
   @override
   String get stepAnimalDetection => 'Animal detection';
@@ -633,7 +633,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use a clear rear udder photo; add more labeled training images for accuracy.';
 
   @override
-  String get alertHighConfidence => 'High-confidence milk mirror analysis';
+  String get alertHighConfidence => 'High-confidence పాల Predictor analysis';
 
   @override
   String get tipHighConfidence =>
@@ -654,4 +654,210 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get overlayUdder => 'Udder';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navGalleries => 'Galleries';
+
+  @override
+  String get navScan => 'Scan';
+
+  @override
+  String get navInsights => 'Insights';
+
+  @override
+  String get navAbout => 'About';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get latestPrediction => 'Latest Prediction';
+
+  @override
+  String get quickInsights => 'Quick Insights';
+
+  @override
+  String get recentAnalyses => 'Recent Analyses';
+
+  @override
+  String get insightUdderHealth => 'Udder Health';
+
+  @override
+  String get insightSymmetry => 'Symmetry';
+
+  @override
+  String get insightBodyCondition => 'Body Condition';
+
+  @override
+  String get insightHeatStress => 'Heat Stress';
+
+  @override
+  String get statusGood => 'Good';
+
+  @override
+  String get statusLow => 'Low';
+
+  @override
+  String get statusDash => '—';
+
+  @override
+  String get estimatedDailyMilkYield => 'Estimated Daily Milk Yield';
+
+  @override
+  String get highYieldPotential => 'High Yield Potential';
+
+  @override
+  String get healthStatus => 'Health Status';
+
+  @override
+  String get confidence => 'Confidence';
+
+  @override
+  String get noPredictionsYet => 'No predictions yet';
+
+  @override
+  String get noPredictionsHint =>
+      'Tap Scan to capture a rear udder photo and get your first yield estimate.';
+
+  @override
+  String get startScan => 'Start Scan';
+
+  @override
+  String get emptyRecentHint =>
+      'Your recent analyses will appear here after scanning.';
+
+  @override
+  String get galleriesTitle => 'Galleries';
+
+  @override
+  String get addPhoto => 'Add photo';
+
+  @override
+  String get samplePhotos => 'Sample photos';
+
+  @override
+  String get samplePhotosHint =>
+      'Add photos under assets/images/ in the project, then rebuild the app.';
+
+  @override
+  String myScans(int count) {
+    return 'My scans ($count)';
+  }
+
+  @override
+  String get myScansEmpty =>
+      'Completed AI analyses appear here after you scan.';
+
+  @override
+  String get insightsTitle => 'Insights';
+
+  @override
+  String get insightsSubtitle =>
+      'Summary from your recent పాల Predictor analyses.';
+
+  @override
+  String get totalScans => 'Total scans';
+
+  @override
+  String get latestYield => 'Latest yield';
+
+  @override
+  String get latestConfidence => 'Latest confidence';
+
+  @override
+  String get insightsEmpty =>
+      'Run a scan to unlock personalized dairy insights.';
+
+  @override
+  String get aboutTagline => 'AI Powered Dairy Analytics';
+
+  @override
+  String get aboutWhatWeDo => 'What we do';
+
+  @override
+  String get aboutWhatWeDoBody =>
+      'Analyze rear udder photos of buffalo to estimate daily milk production using on-device AI and escutcheon geometry.';
+
+  @override
+  String get aboutBuiltFor => 'Built for';
+
+  @override
+  String get aboutBuiltForBody =>
+      'Local / Desi buffalo — rear udder capture workflow.';
+
+  @override
+  String get aboutVersion => 'Version';
+
+  @override
+  String aboutCopyright(int year) {
+    return '© $year పాల Predictor';
+  }
+
+  @override
+  String get choosePhotoSource => 'Choose photo source';
+
+  @override
+  String get choosePhotoSourceSub =>
+      'Capture a new rear photo or pick from your device';
+
+  @override
+  String get cameraSubtitle => 'Take a new photo';
+
+  @override
+  String get gallerySubtitle => 'Choose from device photos';
+
+  @override
+  String get samplePhotosBundled => 'Sample photos (bundled)';
+
+  @override
+  String get captureGuidelines => 'Capture Guidelines';
+
+  @override
+  String get captureGuidelinesSub => 'Live tips while you scan';
+
+  @override
+  String get captureTipClearImage => 'Clear Image = Better Prediction';
+
+  @override
+  String get captureLive => 'LIVE';
+
+  @override
+  String captureTipNofTotal(int current, int total) {
+    return 'Tip $current of $total';
+  }
+
+  @override
+  String get guidelineStandBehind => 'Stand 3–5 feet behind the buffalo';
+
+  @override
+  String get guidelineCameraLevel => 'Keep camera at udder level';
+
+  @override
+  String get guidelineFullUdder => 'Capture full udder in frame';
+
+  @override
+  String get guidelinePortrait => 'Use portrait mode';
+
+  @override
+  String get guidelineLighting => 'Ensure good lighting';
+
+  @override
+  String get guidelineCleanUdder => 'Clean udder and tail area';
+
+  @override
+  String get onboardingSkip => 'Skip';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingGetStarted => 'Get Started';
+
+  @override
+  String litersPerDayShort(String liters) {
+    return '$liters L/day';
+  }
 }

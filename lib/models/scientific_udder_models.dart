@@ -89,24 +89,45 @@ class UdderKeypointSet {
   const UdderKeypointSet({
     required this.leftPin,
     required this.rightPin,
+    required this.tailHead,
     required this.vulva,
     required this.udderTop,
     required this.udderBottom,
+    required this.udderCenter,
     required this.teatLeft,
     required this.teatRight,
     required this.confidence,
     required this.fromHeuristicFallback,
+    this.maskDerived = false,
   });
 
   final Offset leftPin;
   final Offset rightPin;
+  final Offset tailHead;
   final Offset vulva;
   final Offset udderTop;
   final Offset udderBottom;
+  final Offset udderCenter;
   final Offset teatLeft;
   final Offset teatRight;
   final double confidence;
   final bool fromHeuristicFallback;
+  final bool maskDerived;
+
+  /// Overlay order: L pin, R pin, udder center, tail head.
+  List<Offset> get overlayKeypoints =>
+      [leftPin, rightPin, udderCenter, tailHead];
+
+  double get pelvicWidthNorm => (rightPin.dx - leftPin.dx).abs().clamp(0.0, 1.0);
+
+  double get udderHeightNorm =>
+      (udderCenter.dy - tailHead.dy).abs().clamp(0.0, 1.0);
+
+  double get udderPelvicRatio {
+    final pw = pelvicWidthNorm;
+    if (pw < 1e-4) return 0;
+    return (udderHeightNorm / pw).clamp(0.0, 3.0);
+  }
 }
 
 class ScientificStageMetric {
@@ -147,6 +168,7 @@ class ScientificUdderReport {
     this.regressionConfidence,
     this.rectifiedImagePath,
     this.pose,
+    this.keypoints,
   });
 
   final List<ScientificStageMetric> stages;
@@ -158,6 +180,7 @@ class ScientificUdderReport {
   final double? regressionConfidence;
   final String? rectifiedImagePath;
   final PoseEstimate? pose;
+  final UdderKeypointSet? keypoints;
 
   Map<String, dynamic> toFirestore() => {
         'scientificallyValid': scientificallyValid,

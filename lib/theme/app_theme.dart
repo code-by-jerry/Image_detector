@@ -1,37 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Enterprise AI dashboard design tokens (Stripe / Firebase Console inspired).
+/// పాల Predictor brand tokens — see ui_plan.md
 abstract final class AppColors {
-  static const primary = Color(0xFF6C4DFF);
-  static const primaryDark = Color(0xFF4F35E8);
-  static const primarySoft = Color(0xFFEDEBFF);
-  static const lavender = Color(0xFFF6F4FF);
+  static const background = Color(0xFFFAF8F2);
   static const surface = Color(0xFFFFFFFF);
-  static const canvas = Color(0xFFF8F9FC);
-  static const border = Color(0xFFE8EAEF);
-  static const textPrimary = Color(0xFF0F172A);
-  static const textSecondary = Color(0xFF64748B);
-  static const success = Color(0xFF10B981);
+
+  static const primary = Color(0xFF556B2F);
+  static const primaryDark = Color(0xFF3F4F24);
+  static const primarySoft = Color(0xFFE8EFE0);
+
+  static const accentGold = Color(0xFFC89B3C);
+
+  static const textPrimary = Color(0xFF1F2937);
+  static const textSecondary = Color(0xFF6B7280);
+
+  static const border = Color(0xFFE5E7EB);
+  static const success = Color(0xFF4D7C3A);
+  static const successSoft = Color(0xFFDFF0D8);
   static const warning = Color(0xFFF59E0B);
   static const danger = Color(0xFFEF4444);
   static const info = Color(0xFF3B82F6);
 
+  // Legacy aliases for existing enterprise widgets
+  static const canvas = background;
+  static const lavender = primarySoft;
+
   static const aiGlow = BoxShadow(
-    color: Color(0x336C4DFF),
-    blurRadius: 32,
-    offset: Offset(0, 12),
+    color: Color(0x33556B2F),
+    blurRadius: 24,
+    offset: Offset(0, 8),
   );
 
-  /// Premium screen background: white (top-left) → lavender (bottom-right).
   static const backgroundGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [surface, lavender],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [background, Color(0xFFF5F2EA)],
   );
 
   static const backgroundDecoration = BoxDecoration(
-    gradient: backgroundGradient,
+    color: background,
   );
 }
 
@@ -40,14 +48,15 @@ abstract final class AppTheme {
     final base = ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: AppColors.canvas,
+      scaffoldBackgroundColor: AppColors.background,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         brightness: Brightness.light,
         primary: AppColors.primary,
+        secondary: AppColors.accentGold,
         surface: AppColors.surface,
       ),
-      textTheme: GoogleFonts.plusJakartaSansTextTheme(),
+      textTheme: GoogleFonts.interTextTheme(),
       dividerColor: AppColors.border,
     );
 
@@ -57,7 +66,7 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: AppColors.textPrimary,
-        titleTextStyle: GoogleFonts.plusJakartaSans(
+        titleTextStyle: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
@@ -67,7 +76,7 @@ abstract final class AppTheme {
         elevation: 0,
         color: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: AppColors.border),
         ),
       ),
@@ -78,7 +87,7 @@ abstract final class AppTheme {
           elevation: 0,
           minimumSize: const Size.fromHeight(52),
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
-          textStyle: GoogleFonts.plusJakartaSans(
+          textStyle: GoogleFonts.inter(
             fontSize: 15,
             fontWeight: FontWeight.w700,
           ),
@@ -89,8 +98,8 @@ abstract final class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.textPrimary,
-          side: const BorderSide(color: AppColors.border, width: 1.2),
+          foregroundColor: AppColors.primary,
+          side: const BorderSide(color: AppColors.primary, width: 1.2),
           minimumSize: const Size.fromHeight(50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

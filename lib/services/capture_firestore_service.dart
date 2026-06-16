@@ -200,7 +200,7 @@ class CaptureFirestoreService {
       'primaryLabel': folder,
       'hashtags': result.hashtags,
       'description':
-          'Auto from Milk Mirror · ${result.estimatedLiters.toStringAsFixed(1)} L/day',
+          'Auto from పాల Predictor · ${result.estimatedLiters.toStringAsFixed(1)} L/day',
       'createdAt': FieldValue.serverTimestamp(),
       'schemaVersion': 4,
       'trainingSplit': 'pending',

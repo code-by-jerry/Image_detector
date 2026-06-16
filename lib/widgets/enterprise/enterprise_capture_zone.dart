@@ -13,12 +13,14 @@ class EnterpriseCaptureZone extends StatelessWidget {
   final File? image;
   final Widget? overlay;
   final bool modelReady;
+  final bool resultsHero;
 
   const EnterpriseCaptureZone({
     super.key,
     this.image,
     this.overlay,
     required this.modelReady,
+    this.resultsHero = false,
   });
 
   @override
@@ -32,23 +34,36 @@ class EnterpriseCaptureZone extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final maxW = ResponsiveLayout.captureMaxWidth(context, parentW);
-        final maxH = ResponsiveLayout.captureMaxHeight(context);
-        final aspect = ResponsiveLayout.captureAspectRatio(context);
+        final maxW = resultsHero
+            ? parentW
+            : ResponsiveLayout.captureMaxWidth(context, parentW);
+        final maxH = resultsHero
+            ? ResponsiveLayout.resultsHeroMaxHeight(context)
+            : ResponsiveLayout.captureMaxHeight(context);
+        final aspect = resultsHero
+            ? ResponsiveLayout.resultsHeroAspectRatio(context)
+            : ResponsiveLayout.captureAspectRatio(context);
 
         var width = maxW;
         var height = width / aspect;
-        if (height > maxH) {
+        if (resultsHero && constraints.maxHeight.isFinite && constraints.maxHeight > 0) {
+          height = constraints.maxHeight;
+          width = parentW;
+        } else if (height > maxH) {
           height = maxH;
           width = height * aspect;
         }
-        final minH = ResponsiveLayout.tier(context) == ScreenTier.compact
-            ? 160.0
-            : 220.0;
+        final minH = resultsHero
+            ? 240.0
+            : ResponsiveLayout.tier(context) == ScreenTier.compact
+                ? 160.0
+                : 220.0;
         height = math.max(height, minH);
 
+        final imageFit = resultsHero && image != null ? BoxFit.cover : BoxFit.contain;
+
         return Align(
-          alignment: Alignment.center,
+          alignment: resultsHero ? Alignment.topCenter : Alignment.center,
           child: SizedBox(
             width: width,
             height: height,
@@ -64,7 +79,7 @@ class EnterpriseCaptureZone extends StatelessWidget {
                     if (image == null)
                       DairyAiShowcaseCarousel(modelReady: modelReady)
                     else
-                      Image.file(image!, fit: BoxFit.contain),
+                      Image.file(image!, fit: imageFit),
                     if (image != null && overlay != null) overlay!,
                     if (image == null)
                       Positioned(

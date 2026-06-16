@@ -9,7 +9,7 @@ class AppLocalizationsTe extends AppLocalizations {
   AppLocalizationsTe([String locale = 'te']) : super(locale);
 
   @override
-  String get appTitle => 'మిల్క్ మిర్రర్';
+  String get appTitle => 'పాల Predictor';
 
   @override
   String get languageLabel => 'భాష';
@@ -126,7 +126,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get engineMilkMirror => 'పిన్ బోన్ + ఎస్కుచeon (A–B, C–D)';
 
   @override
-  String get engineMilkMirrorTflite => 'మిల్క్ మిర్రర్ + AI';
+  String get engineMilkMirrorTflite => 'పాల Predictor + AI';
 
   @override
   String get engineTflite => 'TFLite AI';
@@ -172,7 +172,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get showcaseBootingAi => 'AI ప్రారంభం';
 
   @override
-  String get showcaseMilkMirror => 'మిల్క్ మిర్రర్';
+  String get showcaseMilkMirror => 'పాల PREDICTOR';
 
   @override
   String get showcaseBuffaloRearTitle => 'గేదె వెనుక';
@@ -300,7 +300,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get metricSymmetry => 'సమరూపత %';
 
   @override
-  String get milkMirrorAnalysis => 'మిల్క్ మిర్రర్ విశ్లేషణ';
+  String get milkMirrorAnalysis => 'పాల Predictor విశ్లేషణ';
 
   @override
   String get measured => 'కొలవబడింది';
@@ -410,7 +410,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get proofFail => 'ఫెయిల్';
 
   @override
-  String get proofMilkMirrorUi => 'మిల్క్ మిర్రర్ (UI):';
+  String get proofMilkMirrorUi => 'పాల Predictor (UI):';
 
   @override
   String get proofHeightAb => 'ఎత్తు A→B';
@@ -428,7 +428,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get proofAllClassScores => 'అన్ని తరగతి స్కోర్లు:';
 
   @override
-  String get badgeMilkMirrorMeasurement => 'మిల్క్ మిర్రర్ కొలత';
+  String get badgeMilkMirrorMeasurement => 'పాల PREDICTOR కొలత';
 
   @override
   String get badgeAiModelTflite => 'AI మోడల్ (TFLite)';
@@ -580,7 +580,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get stepCaptureImage => 'ఫోటో క్యాప్చర్';
 
   @override
-  String get stepRearPhoto => 'వెనుక మిల్క్-మిర్రర్ ఫోటో';
+  String get stepRearPhoto => 'వెనుక క్షీర గ్రంథి ఫోటో';
 
   @override
   String get stepAnimalDetection => 'పశువు గుర్తింపు';
@@ -634,7 +634,7 @@ class AppLocalizationsTe extends AppLocalizations {
       'స్పష్టమైన వెనుక క్షీర గ్రంథి ఫోటో; మరిన్ని లేబుల్ చేసిన చిత్రాలు జోడించండి.';
 
   @override
-  String get alertHighConfidence => 'అధిక-నమ్మకం మిల్క్ మిర్రర్ విశ్లేషణ';
+  String get alertHighConfidence => 'అధిక-నమ్మకం పాల Predictor విశ్లేషణ';
 
   @override
   String get tipHighConfidence =>
@@ -655,4 +655,211 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get overlayUdder => 'క్షీర గ్రంథి';
+
+  @override
+  String get navHome => 'హోమ్';
+
+  @override
+  String get navGalleries => 'గ్యాలరీలు';
+
+  @override
+  String get navScan => 'స్కాన్';
+
+  @override
+  String get navInsights => 'అంతర్దృష్టులు';
+
+  @override
+  String get navAbout => 'గురించి';
+
+  @override
+  String get viewAll => 'అన్నీ చూడండి';
+
+  @override
+  String get latestPrediction => 'తాజా అంచనా';
+
+  @override
+  String get quickInsights => 'త్వరిత అంతర్దృష్టులు';
+
+  @override
+  String get recentAnalyses => 'ఇటీవలి విశ్లేషణలు';
+
+  @override
+  String get insightUdderHealth => 'క్షీర గ్రంథి ఆరోగ్యం';
+
+  @override
+  String get insightSymmetry => 'సమమితి';
+
+  @override
+  String get insightBodyCondition => 'శరీర పరిస్థితి';
+
+  @override
+  String get insightHeatStress => 'వేడి ఒత్తిడి';
+
+  @override
+  String get statusGood => 'మంచిది';
+
+  @override
+  String get statusLow => 'తక్కువ';
+
+  @override
+  String get statusDash => '—';
+
+  @override
+  String get estimatedDailyMilkYield => 'అంచనా దైనిక పాలు దిగుబడి';
+
+  @override
+  String get highYieldPotential => 'అధిక దిగుబడి సామర్థ్యం';
+
+  @override
+  String get healthStatus => 'ఆరోగ్య స్థితి';
+
+  @override
+  String get confidence => 'నమ్మకం';
+
+  @override
+  String get noPredictionsYet => 'ఇంకా అంచనాలు లేవు';
+
+  @override
+  String get noPredictionsHint =>
+      'వెనుక క్షీర గ్రంథి ఫోటో తీయడానికి స్కాన్ నొక్కండి మరియు మొదటి దిగుబడి అంచనా పొందండి.';
+
+  @override
+  String get startScan => 'స్కాన్ ప్రారంభించండి';
+
+  @override
+  String get emptyRecentHint =>
+      'స్కాన్ చేసిన తర్వాత మీ ఇటీవలి విశ్లేషణలు ఇక్కడ కనిపిస్తాయి.';
+
+  @override
+  String get galleriesTitle => 'గ్యాలరీలు';
+
+  @override
+  String get addPhoto => 'ఫోటో జోడించండి';
+
+  @override
+  String get samplePhotos => 'నమూనా ఫోటోలు';
+
+  @override
+  String get samplePhotosHint =>
+      'ప్రాజెక్ట్‌లో assets/images/ కింద ఫోటోలు జోడించండి, తర్వాత యాప్‌ను మళ్లీ బిల్డ్ చేయండి.';
+
+  @override
+  String myScans(int count) {
+    return 'నా స్కాన్‌లు ($count)';
+  }
+
+  @override
+  String get myScansEmpty =>
+      'స్కాన్ చేసిన తర్వాత పూర్తి AI విశ్లేషణలు ఇక్కడ కనిపిస్తాయి.';
+
+  @override
+  String get insightsTitle => 'అంతర్దృష్టులు';
+
+  @override
+  String get insightsSubtitle => 'మీ ఇటీవలి పాల Predictor విశ్లేషణల సారాంశం.';
+
+  @override
+  String get totalScans => 'మొత్తం స్కాన్‌లు';
+
+  @override
+  String get latestYield => 'తాజా దిగుబడి';
+
+  @override
+  String get latestConfidence => 'తాజా నమ్మకం';
+
+  @override
+  String get insightsEmpty =>
+      'వ్యక్తిగతీకరించిన డైరీ అంతర్దృష్టుల కోసం స్కాన్ చేయండి.';
+
+  @override
+  String get aboutTagline => 'AI ఆధారిత డైరీ విశ్లేషణ';
+
+  @override
+  String get aboutWhatWeDo => 'మేము ఏమి చేస్తాము';
+
+  @override
+  String get aboutWhatWeDoBody =>
+      'గేదె వెనుక క్షీర గ్రంథి ఫోటోలను విశ్లేషించి, ఆన్-డివైస్ AI మరియు ఎస్కుచeon జ్యామితితో రోజువారీ పాలు ఉత్పత్తిని అంచనా వేస్తాము.';
+
+  @override
+  String get aboutBuiltFor => 'ఎవరి కోసం';
+
+  @override
+  String get aboutBuiltForBody =>
+      'స్థానిక / దేశీ గేదె — వెనుక క్షీర గ్రంథి క్యాప్చర్ వర్క్‌ఫ్లో.';
+
+  @override
+  String get aboutVersion => 'వెర్షన్';
+
+  @override
+  String aboutCopyright(int year) {
+    return '© $year పాల Predictor';
+  }
+
+  @override
+  String get choosePhotoSource => 'ఫోటో మూలాన్ని ఎంచుకోండి';
+
+  @override
+  String get choosePhotoSourceSub =>
+      'కొత్త వెనుక ఫోటో తీయండి లేదా మీ పరికరం నుండి ఎంచుకోండి';
+
+  @override
+  String get cameraSubtitle => 'కొత్త ఫోటో తీయండి';
+
+  @override
+  String get gallerySubtitle => 'పరికరం ఫోటోల నుండి ఎంచుకోండి';
+
+  @override
+  String get samplePhotosBundled => 'నమూనా ఫోటోలు (బండిల్)';
+
+  @override
+  String get captureGuidelines => 'క్యాప్చర్ మార్గదర్శకాలు';
+
+  @override
+  String get captureGuidelinesSub => 'స్కాన్ చేస్తున్నప్పుడు లైవ్ చిట్కాలు';
+
+  @override
+  String get captureTipClearImage => 'స్పష్టమైన ఫోటో = మెరుగైన అంచనా';
+
+  @override
+  String get captureLive => 'లైవ్';
+
+  @override
+  String captureTipNofTotal(int current, int total) {
+    return 'చిట్కా $current / $total';
+  }
+
+  @override
+  String get guidelineStandBehind => 'గేదె నుండి 3–5 అడugala వెనుక నిలబడండి';
+
+  @override
+  String get guidelineCameraLevel => 'కెమెరాను క్షీర గ్రంథి స్థాయిలో ఉంచండి';
+
+  @override
+  String get guidelineFullUdder =>
+      'పూర్తి క్షీర గ్రంథిని ఫ్రేమ్‌లో క్యాప్చర్ చేయండి';
+
+  @override
+  String get guidelinePortrait => 'పోర్ట్రైట్ మోడ్ ఉపయోగించండి';
+
+  @override
+  String get guidelineLighting => 'మంచి వెలుగు నిర్ధారించండి';
+
+  @override
+  String get guidelineCleanUdder =>
+      'క్షీర గ్రంథి మరియు తోక ప్రాంతం శుభ్రంగా ఉంచండి';
+
+  @override
+  String get onboardingSkip => 'దాటవేయి';
+
+  @override
+  String get onboardingNext => 'తదుపరి';
+
+  @override
+  String get onboardingGetStarted => 'ప్రారంభించండి';
+
+  @override
+  String litersPerDayShort(String liters) {
+    return '$liters లీ/రోజు';
+  }
 }

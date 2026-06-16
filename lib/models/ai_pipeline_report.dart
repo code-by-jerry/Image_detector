@@ -50,7 +50,7 @@ class AiPipelineReport {
   final double overallScore;
   final PipelineStage? failedStage;
   final String? rejectReason;
-  /// Path used for TFLite / Milk Mirror (may be escutcheon crop).
+  /// Path used for TFLite / escutcheon crop (may be escutcheon crop).
   final String? inferenceImagePath;
   final String? cropPath;
 

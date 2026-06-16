@@ -16,8 +16,8 @@ class Stage7TraitDerivation {
     UdderKeypointSet kp, {
     UdderSegmentationResult? segmentation,
   }) {
-    final ruhNorm = (kp.udderTop.dy - kp.vulva.dy).abs().clamp(0.0, 1.0);
-    final ruwNorm = (kp.rightPin.dx - kp.leftPin.dx).abs().clamp(0.0, 1.0);
+    final ruhNorm = (kp.udderCenter.dy - kp.tailHead.dy).abs().clamp(0.0, 1.0);
+    final ruwNorm = kp.pelvicWidthNorm;
     final rtdNorm = _normDist(kp.teatLeft, kp.teatRight);
     final frtdNorm = rtdNorm * 1.15;
 

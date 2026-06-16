@@ -71,10 +71,14 @@ class DairyPipelineBuilder {
       alert = DairyAlert.caution;
       alertMessage = 'Prediction with caution — train TFLite or retake photo';
       tip = 'Use a clear rear udder photo; add more labeled training images for accuracy.';
-    } else if (displayConfidence >= 0.7) {
+    } else if (displayConfidence >= 0.85) {
       alert = DairyAlert.success;
-      alertMessage = 'High-confidence milk mirror analysis';
+      alertMessage = 'High-confidence పాల Predictor analysis';
       tip = 'Maintain nutrition and monitor udder health weekly.';
+    } else if (displayConfidence >= 0.68) {
+      alert = DairyAlert.info;
+      alertMessage = 'Analysis complete — moderate confidence';
+      tip = 'Retake with full udder visible for higher confidence.';
     } else {
       alert = DairyAlert.info;
       alertMessage = 'Analysis complete — review measurements below';
@@ -85,7 +89,7 @@ class DairyPipelineBuilder {
       PipelineStep(
         index: 1,
         title: 'Capture image',
-        subtitle: 'Rear milk-mirror photo',
+        subtitle: 'Rear udder photo',
         status: PipelineStepStatus.pass,
       ),
       PipelineStep(

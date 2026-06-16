@@ -8,19 +8,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'l10n/l10n_extensions.dart';
 import 'l10n/report_localizer.dart';
 import 'models/dairy_pipeline_report.dart';
+import 'models/scan_actions.dart';
+import 'screens/app_shell.dart';
+import 'services/analysis_history_store.dart';
+import 'services/asset_image_loader.dart';
 import 'services/capture_firestore_service.dart';
 import 'services/classifier_service_new.dart';
 import 'services/image_based_milk_calculator.dart';
 import 'services/inference_logger.dart';
 import 'services/locale_service.dart';
+import 'services/model_status_store.dart';
 import 'services/milk_mirror_measurement_service.dart';
 import 'theme/app_theme.dart';
+import 'widgets/anatomy_escutcheon_debug.dart';
 import 'widgets/enterprise/ai_analysis_overlay.dart';
 import 'widgets/enterprise/enterprise_ai_dashboard.dart';
 import 'widgets/enterprise/enterprise_app_header.dart';
@@ -28,18 +35,13 @@ import 'widgets/enterprise/enterprise_capture_zone.dart';
 import 'widgets/enterprise/enterprise_measurement_card.dart';
 import 'widgets/enterprise/glass_card.dart';
 import 'widgets/enterprise/responsive_layout.dart';
+import 'widgets/enterprise/results_preview_stats_row.dart';
 import 'widgets/anatomy_overlay_layer.dart';
+import 'widgets/branding/branded_launch_splash.dart';
 import 'widgets/language_selector.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    debugPrint('Firebase init failed: $e');
-  }
   runApp(const ImageDetectorApp());
 }
 
@@ -60,13 +62,42 @@ class ImageDetectorApp extends StatefulWidget {
 }
 
 class _ImageDetectorAppState extends State<ImageDetectorApp> {
+  static const _onboardingPrefKey = 'onboarding_completed_v1';
   final _localeService = LocaleService();
+  bool _appReady = false;
+  bool _showOnboarding = false;
 
   @override
   void initState() {
     super.initState();
-    _localeService.loadSavedLocale();
+    _bootstrapApp();
     _localeService.addListener(_onLocaleChanged);
+  }
+
+  Future<void> _bootstrapApp() async {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      debugPrint('Firebase init failed: $e');
+    }
+    await _localeService.loadSavedLocale();
+    await AnalysisHistoryStore.instance.loadFromDisk();
+    final prefs = await SharedPreferences.getInstance();
+    final completed = prefs.getBool(_onboardingPrefKey) ?? false;
+    if (!mounted) return;
+    setState(() {
+      _showOnboarding = !completed;
+      _appReady = true;
+    });
+  }
+
+  Future<void> _completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingPrefKey, true);
+    if (!mounted) return;
+    setState(() => _showOnboarding = false);
   }
 
   void _onLocaleChanged() => setState(() {});
@@ -82,7 +113,7 @@ class _ImageDetectorAppState extends State<ImageDetectorApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Milk Mirror',
+      title: 'పాల Predictor',
       theme: AppTheme.build(),
       locale: _localeService.locale,
       localizationsDelegates: const [
@@ -92,21 +123,196 @@ class _ImageDetectorAppState extends State<ImageDetectorApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: LocaleService.supportedLocales,
-      home: DetectorHomePage(localeService: _localeService),
+      home: !_appReady
+          ? const BrandedLaunchSplash()
+          : _showOnboarding
+              ? _OnboardingScreen(onDone: _completeOnboarding)
+              : AppShell(
+                  localeService: _localeService,
+                  scanPageBuilder: (goHome, registerScan) {
+                    return DetectorHomePage(
+                      localeService: _localeService,
+                      onExitToHome: goHome,
+                      onRegisterScan: registerScan,
+                      headlessCapture: true,
+                    );
+                  },
+                ),
+    );
+  }
+}
+
+class _OnboardingScreen extends StatefulWidget {
+  const _OnboardingScreen({required this.onDone});
+
+  final Future<void> Function() onDone;
+
+  @override
+  State<_OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<_OnboardingScreen> {
+  static const _pages = <String>[
+    'assets/branding/onboarding/onscreen-1.png',
+    'assets/branding/onboarding/onscreen-2.png',
+    'assets/branding/onboarding/onscreen-3.png',
+  ];
+
+  final _controller = PageController();
+  int _index = 0;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _nextOrDone() async {
+    if (_index >= _pages.length - 1) {
+      await widget.onDone();
+      return;
+    }
+    await _controller.nextPage(
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final isLast = _index == _pages.length - 1;
+    const primary = Color(0xFF556B2F);
+    const textPrimary = Color(0xFF1F2937);
+
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          PageView.builder(
+            controller: _controller,
+            itemCount: _pages.length,
+            onPageChanged: (value) => setState(() => _index = value),
+            itemBuilder: (_, i) => Image.asset(
+              _pages[i],
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8, right: 12),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Material(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    elevation: 2,
+                    borderRadius: BorderRadius.circular(24),
+                    child: InkWell(
+                      onTap: () => widget.onDone(),
+                      borderRadius: BorderRadius.circular(24),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 10,
+                        ),
+                        child: Text(
+                          l10n.onboardingSkip,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: textPrimary,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Material(
+                    elevation: 3,
+                    borderRadius: BorderRadius.circular(28),
+                    color: primary,
+                    child: InkWell(
+                      onTap: _nextOrDone,
+                      borderRadius: BorderRadius.circular(28),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 28,
+                          vertical: 14,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              isLast ? l10n.onboardingGetStarted : l10n.onboardingNext,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Icon(
+                              isLast
+                                  ? Icons.check_rounded
+                                  : Icons.arrow_forward_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class DetectorHomePage extends StatefulWidget {
-  const DetectorHomePage({super.key, required this.localeService});
+  const DetectorHomePage({
+    super.key,
+    required this.localeService,
+    this.onExitToHome,
+    this.onRegisterScan,
+    this.headlessCapture = false,
+  });
 
   final LocaleService localeService;
+  final VoidCallback? onExitToHome;
+  final void Function(ScanActions actions)? onRegisterScan;
+  final bool headlessCapture;
 
   @override
-  State<DetectorHomePage> createState() => _DetectorHomePageState();
+  State<DetectorHomePage> createState() => DetectorHomePageState();
 }
 
-class _DetectorHomePageState extends State<DetectorHomePage> {
+class DetectorHomePageState extends State<DetectorHomePage> {
   final _picker = ImagePicker();
   final _classifier = ClassifierService();
   final _captureStore = CaptureFirestoreService();
@@ -137,6 +343,46 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
   void initState() {
     super.initState();
     _prepareModel();
+    _registerScanActions();
+  }
+
+  @override
+  void didUpdateWidget(covariant DetectorHomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.onRegisterScan != widget.onRegisterScan) {
+      _registerScanActions();
+    }
+  }
+
+  void _registerScanActions() {
+    widget.onRegisterScan?.call(
+      ScanActions(
+        pickFromCamera: () => _pickImageSource(ImageSource.camera),
+        pickFromGallery: () => _pickImageSource(ImageSource.gallery),
+        beginWithImagePath: beginScanWithImage,
+        beginWithAssetPath: _beginScanWithAsset,
+      ),
+    );
+  }
+
+  Future<void> _beginScanWithAsset(String assetPath) async {
+    final path = await AssetImageLoader.assetPathToTempFile(assetPath);
+    await beginScanWithImage(path, source: 'asset');
+  }
+
+  /// Starts the scan flow from an existing image file.
+  Future<void> beginScanWithImage(String imagePath, {String source = 'camera'}) async {
+    if (!mounted) return;
+    setState(() {
+      _pickedImage = File(imagePath);
+      _prediction = null;
+      _imageBasedResult = null;
+      _flowStage = _CaptureFlowStage.review;
+      _animalIsHealthy = true;
+      _error = null;
+      _currentCaptureId = null;
+    });
+    await _uploadCaptureDraft(imagePath, source);
   }
 
   String _engineLabel(AppLocalizations l10n, String source) =>
@@ -171,49 +417,48 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     if (!mounted) {
       return;
     }
+    ModelStatusStore.instance.setReady(
+      ready,
+      error: ready ? null : _classifier.modelLoadError,
+    );
     setState(() {
       _isModelReady = ready;
       _modelLoadError = ready ? null : _classifier.modelLoadError;
     });
   }
 
-  Future<void> _pickImage(ImageSource source) async {
+  /// Picks an image and returns its path (does not change flow until [beginScanWithImage]).
+  Future<String?> _pickImageSource(ImageSource source) async {
     debugPrint('LOG: Requesting image from ${source.name}');
 
     if (Platform.isWindows && source == ImageSource.camera) {
-      if (!mounted) return;
+      if (!mounted) return null;
       setState(() {
         _error =
             'Camera is not supported on Windows desktop. Please use "Gallery" to upload a buffalo photo.';
       });
-      return;
+      return null;
     }
-
-    setState(() => _error = null);
 
     try {
       final image = await _picker.pickImage(source: source, imageQuality: 85);
-      if (image == null) return;
-
+      if (image == null) return null;
       debugPrint('LOG: Image picked: ${image.path}');
-      if (!mounted) return;
-      setState(() {
-        _pickedImage = File(image.path);
-        _prediction = null;
-        _imageBasedResult = null;
-        _flowStage = _CaptureFlowStage.review;
-        _animalIsHealthy = true;
-        _error = null;
-        _currentCaptureId = null;
-      });
-      _uploadCaptureDraft(image.path, source.name);
+      return image.path;
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) return null;
       setState(() {
         _error =
             'Failed to open ${source.name.toLowerCase()}. Please check app permissions.';
       });
+      return null;
     }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final path = await _pickImageSource(source);
+    if (path == null) return;
+    await beginScanWithImage(path, source: source.name);
   }
 
   Future<void> _uploadCaptureDraft(String imagePath, String source) async {
@@ -339,6 +584,13 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
 
       await _syncAnalysisToFirestore(result);
 
+      AnalysisHistoryStore.instance.recordFromPrediction(
+        result: result,
+        imageFile: _pickedImage,
+        captureId: _currentCaptureId,
+        healthy: _animalIsHealthy ?? true,
+      );
+
       setState(() {
         _prediction = result;
         _imageBasedResult = imageBasedResult;
@@ -358,6 +610,10 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
   }
 
   void _resetToCapture() {
+    if (widget.headlessCapture) {
+      widget.onExitToHome?.call();
+      return;
+    }
     setState(() {
       _flowStage = _CaptureFlowStage.capture;
       _pickedImage = null;
@@ -423,17 +679,27 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: EnterpriseAppHeader(
-                                    modelReady: _isModelReady,
-                                    subtitle: _isModelReady
-                                        ? l10n.headerSubtitleReady
-                                        : l10n.headerSubtitleBooting,
+                                if (widget.onExitToHome != null)
+                                  IconButton(
+                                    onPressed: widget.onExitToHome,
+                                    icon: const Icon(Icons.home_outlined),
+                                    color: AppColors.primary,
+                                    tooltip: 'Home',
                                   ),
+                                Expanded(
+                                  child: widget.headlessCapture
+                                      ? _buildCompactScanHeader(context, l10n)
+                                      : EnterpriseAppHeader(
+                                          modelReady: _isModelReady,
+                                          subtitle: _isModelReady
+                                              ? l10n.headerSubtitleReady
+                                              : l10n.headerSubtitleBooting,
+                                        ),
                                 ),
-                                LanguageSelector(
-                                  localeService: widget.localeService,
-                                ),
+                                if (!widget.headlessCapture)
+                                  LanguageSelector(
+                                    localeService: widget.localeService,
+                                  ),
                               ],
                             ),
                 if (!_isModelReady && _modelLoadError != null) ...[
@@ -456,17 +722,18 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                     ),
                   ),
                 ],
-                    if (kDebugMode) ...[
+                    if (kDebugMode && !widget.headlessCapture) ...[
                       const SizedBox(height: 12),
                       _buildDebugProfileForm(context),
                     ],
-                            SizedBox(height: isWide ? 14 : 12),
-                            _buildFlowStepper(context, isWide),
                             SizedBox(height: isWide ? 16 : 12),
                             if (_flowStage == _CaptureFlowStage.capture) ...[
-                              _buildCaptureSection(showOverlay: false),
-                              SizedBox(height: isWide ? 16 : 14),
-                              _buildCaptureActions(context, isWide),
+                              if (!widget.headlessCapture) ...[
+                                _buildCaptureSection(showOverlay: false),
+                                SizedBox(height: isWide ? 16 : 14),
+                                _buildCaptureActions(context, isWide),
+                              ] else
+                                const SizedBox.shrink(),
                             ],
                             if (_flowStage == _CaptureFlowStage.review) ...[
                               _buildCaptureSection(showOverlay: false),
@@ -474,7 +741,19 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                               _buildReviewPanel(context, isWide),
                             ],
                             if (_flowStage == _CaptureFlowStage.results) ...[
-                              _buildCaptureSection(showOverlay: true),
+                              if (_prediction != null &&
+                                  _prediction!.pipeline != null)
+                                ResultsPreviewStatsRow(
+                                  imagePreview: _buildCaptureSection(
+                                    showOverlay: true,
+                                    resultsHero: true,
+                                  ),
+                                  report: _reportWithUserHealth(
+                                    _prediction!.pipeline!,
+                                  )!,
+                                )
+                              else
+                                _buildCaptureSection(showOverlay: true),
                               SizedBox(height: isWide ? 14 : 12),
                             ],
                     if (_error != null) ...[
@@ -490,6 +769,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
                         EnterpriseAiDashboard(
                           report: _reportWithUserHealth(_prediction!.pipeline!)!,
                           sessionId: _prediction!.diagnostics?.sessionId,
+                          hideYieldHero: true,
                         ),
                       if (_prediction!.milkMirror != null) ...[
                         const SizedBox(height: 12),
@@ -532,66 +812,6 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
             ),
         ],
       ),
-    );
-  }
-
-  Widget _buildFlowStepper(BuildContext context, bool isWide) {
-    final l10n = context.l10n;
-    return GlassCard(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      radius: 16,
-      child: Row(
-        children: [
-          _flowStepChip(1, l10n.flowCapture, _flowStage == _CaptureFlowStage.capture),
-          _flowConnector(),
-          _flowStepChip(2, l10n.flowReview, _flowStage == _CaptureFlowStage.review),
-          _flowConnector(),
-          _flowStepChip(3, l10n.flowResults, _flowStage == _CaptureFlowStage.results),
-        ],
-      ),
-    );
-  }
-
-  Widget _flowConnector() {
-    return Expanded(
-      child: Container(
-        height: 2,
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        color: AppColors.border,
-      ),
-    );
-  }
-
-  Widget _flowStepChip(int step, String label, bool active) {
-    return Column(
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active ? AppColors.primary : AppColors.primarySoft,
-            shape: BoxShape.circle,
-          ),
-          child: Text(
-            '$step',
-            style: TextStyle(
-              color: active ? Colors.white : AppColors.primary,
-              fontWeight: FontWeight.w800,
-              fontSize: 12,
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: active ? FontWeight.w800 : FontWeight.w500,
-            color: active ? AppColors.primary : AppColors.textSecondary,
-          ),
-        ),
-      ],
     );
   }
 
@@ -825,7 +1045,39 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
     );
   }
 
-  Widget _buildCaptureSection({required bool showOverlay}) {
+  Widget _buildCompactScanHeader(BuildContext context, AppLocalizations l10n) {
+    final title = switch (_flowStage) {
+      _CaptureFlowStage.capture => 'Scan',
+      _CaptureFlowStage.review => 'Review photo',
+      _CaptureFlowStage.results => 'Results',
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          _isModelReady ? l10n.headerSubtitleReady : l10n.headerSubtitleBooting,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCaptureSection({
+    required bool showOverlay,
+    bool resultsHero = false,
+  }) {
     final overlay = showOverlay &&
             _pickedImage != null &&
             _prediction != null &&
@@ -841,6 +1093,7 @@ class _DetectorHomePageState extends State<DetectorHomePage> {
       image: _pickedImage,
       modelReady: _isModelReady,
       overlay: overlay,
+      resultsHero: resultsHero,
     );
   }
 
@@ -1960,59 +2213,50 @@ class AnatomicalPainter extends CustomPainter {
 
     canvas.clipRect(ui.Rect.fromLTRB(0.0, 0.0, size.width, size.height));
 
-    final escutcheonPaint = Paint()
-      ..color = const Color(0xFFFFD54F)
-      ..strokeWidth = 2.5
-      ..style = PaintingStyle.stroke;
-
     final linePaint = Paint()
       ..color = Colors.greenAccent
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
     final fillPaint = Paint()
-      ..color = const Color(0xFF10B981).withValues(alpha: 0.12)
+      ..color = const Color(0xFF10B981).withValues(alpha: 0.10)
       ..style = PaintingStyle.fill;
 
     final leftPin = _pt(keypoints[0], size);
     final rightPin = _pt(keypoints[1], size);
     final udder = _pt(keypoints[2], size);
-    final spine = keypoints.length > 3 ? _pt(keypoints[3], size) : Offset((leftPin.dx + rightPin.dx) / 2, leftPin.dy - 40);
+    final tailHead = keypoints.length > 3
+        ? _pt(keypoints[3], size)
+        : Offset((leftPin.dx + rightPin.dx) / 2, leftPin.dy - 40);
 
-    final m = milkMirror;
-    final pointA = m?.pointA != null ? _pt(m!.pointA!, size) : spine;
-    final pointB = m?.pointB != null ? _pt(m!.pointB!, size) : udder;
-    final pointC = m?.pointC != null ? _pt(m!.pointC!, size) : Offset(leftPin.dx, (leftPin.dy + udder.dy) / 2);
-    final pointD = m?.pointD != null ? _pt(m!.pointD!, size) : Offset(rightPin.dx, (rightPin.dy + udder.dy) / 2);
-
-    // Escutcheon region (master diagram)
-    final escutcheonRect = ui.Rect.fromPoints(
-      Offset(pointC.dx, pointA.dy),
-      Offset(pointD.dx, pointB.dy),
+    paintEscutcheonDebugLayer(
+      canvas,
+      size,
+      metrics: milkMirror,
+      keypoints: keypoints,
     );
-    canvas.drawRect(escutcheonRect, fillPaint);
-    canvas.drawRect(escutcheonRect, escutcheonPaint);
 
-    // Height A–B on spine (midpoint of pin row)
-    final spineX = (pointC.dx + pointD.dx) / 2;
-    canvas.drawLine(
-      Offset(spineX, pointA.dy),
-      Offset(spineX, pointB.dy),
-      escutcheonPaint,
-    );
-    // Width C–D (horizontal)
-    canvas.drawLine(pointC, pointD, escutcheonPaint);
+    // Diamond: tail head → pins → udder center
+    final diamond = Path()
+      ..moveTo(tailHead.dx, tailHead.dy)
+      ..lineTo(leftPin.dx, leftPin.dy)
+      ..lineTo(udder.dx, udder.dy)
+      ..lineTo(rightPin.dx, rightPin.dy)
+      ..close();
+    canvas.drawPath(diamond, fillPaint);
+    canvas.drawPath(diamond, linePaint);
 
-    canvas.drawLine(spine, leftPin, linePaint);
-    canvas.drawLine(spine, rightPin, linePaint);
+    canvas.drawLine(tailHead, leftPin, linePaint);
+    canvas.drawLine(tailHead, rightPin, linePaint);
     canvas.drawLine(leftPin, udder, linePaint);
     canvas.drawLine(rightPin, udder, linePaint);
 
+    final pelvicW = (keypoints[1].dx - keypoints[0].dx).abs();
+    final udderH = (keypoints[2].dy - (keypoints.length > 3 ? keypoints[3].dy : keypoints[0].dy - 0.08)).abs();
+    final ratio = pelvicW > 0.01 ? udderH / pelvicW : 0.0;
+
     final anatomicalPoints = [
-      {'point': pointA, 'label': 'A', 'color': const Color(0xFFFFD54F)},
-      {'point': pointB, 'label': 'B', 'color': const Color(0xFFFFD54F)},
-      {'point': pointC, 'label': 'C', 'color': const Color(0xFFFFD54F)},
-      {'point': pointD, 'label': 'D', 'color': const Color(0xFFFFD54F)},
+      {'point': tailHead, 'label': 'Tail', 'color': const Color(0xFFFFD54F)},
       {'point': leftPin, 'label': leftPinLabel, 'color': Colors.redAccent},
       {'point': rightPin, 'label': rightPinLabel, 'color': Colors.redAccent},
       {'point': udder, 'label': udderLabel, 'color': Colors.blueAccent},
@@ -2023,14 +2267,10 @@ class AnatomicalPainter extends CustomPainter {
       final label = item['label'] as String;
       final color = item['color'] as Color;
 
-      // Outer glow
       canvas.drawCircle(point, 12, Paint()..color = color.withValues(alpha: 0.2)..style = PaintingStyle.fill);
-      // Middle ring
       canvas.drawCircle(point, 8, Paint()..color = color.withValues(alpha: 0.5)..style = PaintingStyle.fill);
-      // Inner dot
       canvas.drawCircle(point, 4, Paint()..color = color..style = PaintingStyle.fill);
 
-      // Draw labels
       final textPainter = TextPainter(
         text: TextSpan(
           text: label,
@@ -2047,27 +2287,24 @@ class AnatomicalPainter extends CustomPainter {
       textPainter.paint(canvas, Offset(point.dx - textPainter.width / 2, point.dy - 20));
     }
 
-    if (m != null) {
-      final measurementText =
-          'H: ${(m.heightNorm * 100).toStringAsFixed(0)}%  W: ${(m.widthNorm * 100).toStringAsFixed(0)}%';
-      final measurementPainter = TextPainter(
-        text: TextSpan(
-          text: measurementText,
-          style: const TextStyle(
-            color: Color(0xFFFFD54F),
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            shadows: [Shadow(blurRadius: 3, color: Colors.black)],
-          ),
+    final measurementText =
+        'Pel W: ${(pelvicW * 100).toStringAsFixed(0)}%  '
+        'Udd H: ${(udderH * 100).toStringAsFixed(0)}%  '
+        'Ratio: ${ratio.toStringAsFixed(2)}';
+    final measurementPainter = TextPainter(
+      text: TextSpan(
+        text: measurementText,
+        style: const TextStyle(
+          color: Color(0xFFFFD54F),
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          shadows: [Shadow(blurRadius: 3, color: Colors.black)],
         ),
-        textDirection: TextDirection.ltr,
-      );
-      measurementPainter.layout();
-      measurementPainter.paint(
-        canvas,
-        Offset(escutcheonRect.left + 4, escutcheonRect.top + 4),
-      );
-    }
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    measurementPainter.layout();
+    measurementPainter.paint(canvas, Offset(8, 8));
   }
 
   @override

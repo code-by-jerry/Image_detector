@@ -46,7 +46,7 @@ class ReportLocalizer {
         return l10n.stageLate;
       case 'Capture image':
         return l10n.stepCaptureImage;
-      case 'Rear milk-mirror photo':
+      case 'Rear udder photo':
         return l10n.stepRearPhoto;
       case 'Animal detection':
         return l10n.stepAnimalDetection;
@@ -78,7 +78,7 @@ class ReportLocalizer {
         return l10n.alertCaution;
       case 'Use a clear rear udder photo; add more labeled training images for accuracy.':
         return l10n.tipCaution;
-      case 'High-confidence milk mirror analysis':
+      case 'High-confidence పాల Predictor analysis':
         return l10n.alertHighConfidence;
       case 'Maintain nutrition and monitor udder health weekly.':
         return l10n.tipHighConfidence;

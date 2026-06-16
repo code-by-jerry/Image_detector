@@ -1,5 +1,5 @@
 name: image_detector
-description: "A new Flutter project."
+description: "పాల Predictor — AI powered dairy analytics."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -42,6 +42,7 @@ dependencies:
   cloud_firestore: ^6.3.0
   firebase_storage: ^13.3.0
   crypto: ^3.0.6
+  path: ^1.9.1
   path_provider: ^2.1.5
   shared_preferences: ^2.5.3
   google_fonts: ^6.2.1
@@ -49,6 +50,7 @@ dependencies:
   flutter_svg: ^2.0.17
   smooth_page_indicator: ^1.2.1
   firebase_core_platform_interface: ^6.0.3
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +62,16 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+
+flutter_native_splash:
+  color: "#FAF8F2"
+  image: assets/branding/splash/splash-native.png
+  android_gravity: center
+  ios_content_mode: scaleAspectFit
+  android_12:
+    color: "#FAF8F2"
+    image: assets/branding/splash/splash-icon-blank.png
+    icon_background_color: "#FAF8F2"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -75,10 +87,30 @@ flutter:
 
   assets:
     - assets/model/model.tflite
+    - assets/model/udder_seg.tflite
+    - assets/model/udder_seg_metadata.json
     - assets/model/milk_mirror_calibration.json
     - assets/model/training_metadata.json
     - assets/labels/labels.txt
     - assets/SVG/
+    - assets/branding/logo/logo.png
+    - assets/branding/logo/logo-1.png
+    - assets/branding/logo/logo-2.png
+    - assets/branding/logo/logo-3.png
+    - assets/branding/logo/logo-3-display.png
+    - assets/branding/logo/logo-tagline.png
+    - assets/branding/splash/new.png
+    - assets/branding/splash/new-display.png
+    - assets/branding/splash/spash-logo.png
+    - assets/branding/splash/splash-native.png
+    - assets/branding/splash/splash-icon-blank.png
+    - assets/branding/onboarding/onscreen-1.png
+    - assets/branding/onboarding/onscreen-2.png
+    - assets/branding/onboarding/onscreen-3.png
+    - assets/branding/banner/banner (1).png
+    - assets/branding/banner/banner (2).png
+    - assets/branding/banner/banner (3).png
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

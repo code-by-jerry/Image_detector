@@ -8,7 +8,7 @@ import 'milk_mirror_calibration.dart';
 import 'milk_production_scale.dart';
 import 'rear_anatomy_detector.dart';
 
-/// Milk Mirror escutcheon logic (master diagram):
+/// పాల Predictor escutcheon logic (master diagram):
 /// A–B = height, C–D = width, area, symmetry → yield estimate.
 class MilkMirrorMeasurementService {
   static const int _sampleStep = 3;
@@ -86,7 +86,7 @@ class MilkMirrorMeasurementService {
         if (l == null || r == null || u == null) {
           InferenceLogger.log('MILK_MIRROR', 'Missing landmarks L=$l R=$r U=$u');
           return MilkMirrorResult.failed(
-            'Could not find pin bones / udder — use rear milk-mirror photo (3–5 ft, full udder)',
+            'Could not find pin bones / udder — use rear udder photo (3–5 ft, full udder)',
           );
         }
         leftPin = l;
@@ -104,7 +104,7 @@ class MilkMirrorMeasurementService {
     // Reject degenerate escutcheon from bad alignment
     if (height < 0.08 || width < 0.06) {
       return MilkMirrorResult.failed(
-        'Could not align Milk Mirror on this photo — use centered rear view, full udder visible',
+        'Could not align escutcheon on this photo — use centered rear view, full udder visible',
       );
     }
     height = height.clamp(0.05, 0.95);
@@ -375,7 +375,7 @@ class MilkMirrorResult {
       );
 }
 
-/// Data for Milk Mirror UI (escutcheon card + overlay labels A–D).
+/// Data for పాల Predictor UI (escutcheon card + overlay labels A–D).
 class MilkMirrorUiMetrics {
   final double litersPerDay;
   final String rangeLabel;

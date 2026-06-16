@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// Breakpoints for Milk Mirror responsive UI (mobile / tablet / desktop).
+/// Breakpoints for పాల Predictor responsive UI (mobile / tablet / desktop).
 enum ScreenTier { compact, medium, expanded, wide }
 
 abstract final class ResponsiveLayout {
@@ -94,6 +94,25 @@ abstract final class ResponsiveLayout {
       _ => 1.35,
     };
   }
+
+  /// Taller portrait frame for results hero (image left, stats right).
+  static double resultsHeroAspectRatio(BuildContext context) => 0.72;
+
+  static double resultsHeroMaxHeight(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final padding = MediaQuery.paddingOf(context);
+    final usable = size.height - padding.top - padding.bottom;
+
+    return switch (tier(context)) {
+      ScreenTier.compact => math.min(usable * 0.50, 360),
+      ScreenTier.medium => math.min(usable * 0.52, 400),
+      _ => math.min(usable * 0.54, 440),
+    };
+  }
+
+  /// Narrow stats rail beside results hero image.
+  static double resultsStatsRailWidth(double totalWidth) =>
+      math.min(132.0, math.max(108.0, totalWidth * 0.30));
 
   static double captureRadius(BuildContext context) {
     return switch (tier(context)) {

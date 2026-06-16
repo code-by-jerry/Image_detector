@@ -21,6 +21,7 @@ import 'udder_escutcheon_crop_service.dart';
 import 'sex_classifier_service.dart';
 import 'crop_species_gate_service.dart';
 import 'tflite_classifier_service.dart';
+import 'yield_confidence_composer.dart';
 import 'yield_fusion_service.dart';
 
 class PredictionResult {
@@ -91,6 +92,7 @@ class ClassifierService {
   final DairyPipelineBuilder _pipelineBuilder = DairyPipelineBuilder();
   final UdderEscutcheonCropService _cropService = UdderEscutcheonCropService();
   final YieldFusionService _yieldFusion = YieldFusionService();
+  final YieldConfidenceComposer _confidenceComposer = const YieldConfidenceComposer();
   final CropSpeciesGateService _cropSpecies = CropSpeciesGateService();
   final AiPipelineOrchestrator _aiPipeline = AiPipelineOrchestrator();
   final ScientificUdderPipeline _scientificPipeline = ScientificUdderPipeline();
@@ -370,7 +372,7 @@ class ClassifierService {
         }
       }
 
-      InferenceLogger.banner('STEP 2 — Milk Mirror measurement (pin bones / escutcheon)');
+      InferenceLogger.banner('STEP 2 — పాల Predictor measurement (pin bones / escutcheon)');
       final mirror = _milkMirror.measureFromImage(
         imagePath,
         leftHip: _gateKeypoint(gate.keypoints, 0),
@@ -441,8 +443,23 @@ class ClassifierService {
           );
         }
       }
-      final overlayKeypoints =
-          mirror.success ? mirror.keypoints : gate.keypoints;
+
+      confidence = _confidenceComposer.compose(
+        fusionConfidence: confidence,
+        mirrorConfidence: mirror.confidence,
+        mirrorSuccess: mirror.success,
+        mirrorLiters: liters,
+        tfliteTrained: _tfliteTrained,
+        tfliteValAccuracy: _tfliteValAccuracy,
+        tflite: ml,
+        scientific: scientificReport,
+      );
+
+      final overlayKeypoints = _resolveOverlayKeypoints(
+        mirror: mirror,
+        gateKeypoints: gate.keypoints,
+        scientificReport: scientificReport,
+      );
 
       final rangeLabel =
           '${fusion.yieldMin.toStringAsFixed(1)} – ${fusion.yieldMax.toStringAsFixed(1)} L/day';
@@ -567,6 +584,21 @@ class ClassifierService {
       rulesGateMs: rulesGateMs,
       logLines: InferenceLogger.sessionLogSnapshot(),
     );
+  }
+
+  static List<Offset> _resolveOverlayKeypoints({
+    required MilkMirrorResult mirror,
+    required List<Offset> gateKeypoints,
+    ScientificUdderReport? scientificReport,
+  }) {
+    final kp = scientificReport?.keypoints;
+    if (kp != null) {
+      return kp.overlayKeypoints;
+    }
+    if (mirror.success && mirror.keypoints.isNotEmpty) {
+      return mirror.keypoints;
+    }
+    return gateKeypoints;
   }
 
   static Offset? _gateKeypoint(List<Offset> keypoints, int index) {
@@ -751,7 +783,7 @@ class VeterinaryBuffaloDetector {
       features['sex_is_bull'] = sex.isBull;
       final prediction = _predictMilkProduction(features, breed, age, lactation, daysInMilk, feed);
       
-      InferenceLogger.log('RULES', 'PASS — all 8 steps OK, handing off to Milk Mirror + TFLite');
+      InferenceLogger.log('RULES', 'PASS — all 8 steps OK, handing off to పాల Predictor + TFLite');
       final kp = <Offset>[
         if (keypoints['leftHip'] != null) keypoints['leftHip'] as Offset,
         if (keypoints['rightHip'] != null) keypoints['rightHip'] as Offset,

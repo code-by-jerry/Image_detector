@@ -9,7 +9,7 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
-  String get appTitle => 'मिल्क मिरर';
+  String get appTitle => 'పాల Predictor';
 
   @override
   String get languageLabel => 'भाषा';
@@ -123,7 +123,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get engineMilkMirror => 'पिन बोन + एस्कुचeon (A–B, C–D)';
 
   @override
-  String get engineMilkMirrorTflite => 'मिल्क मिरर + AI';
+  String get engineMilkMirrorTflite => 'పాల Predictor + AI';
 
   @override
   String get engineTflite => 'TFLite AI';
@@ -169,7 +169,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get showcaseBootingAi => 'AI शुरू';
 
   @override
-  String get showcaseMilkMirror => 'मिल्क मिरर';
+  String get showcaseMilkMirror => 'పాల PREDICTOR';
 
   @override
   String get showcaseBuffaloRearTitle => 'भैंस पिछला दृश्य';
@@ -297,7 +297,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get metricSymmetry => 'समरूपता %';
 
   @override
-  String get milkMirrorAnalysis => 'मिल्क मिरर विश्लेषण';
+  String get milkMirrorAnalysis => 'పాల Predictor विश्लेषण';
 
   @override
   String get measured => 'मापा गया';
@@ -407,7 +407,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get proofFail => 'फेल';
 
   @override
-  String get proofMilkMirrorUi => 'मिल्क मिरर (UI):';
+  String get proofMilkMirrorUi => 'పాల Predictor (UI):';
 
   @override
   String get proofHeightAb => 'ऊँचाई A→B';
@@ -425,7 +425,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get proofAllClassScores => 'सभी वर्ग स्कोर:';
 
   @override
-  String get badgeMilkMirrorMeasurement => 'मिल्क मिरर माप';
+  String get badgeMilkMirrorMeasurement => 'పాల PREDICTOR माप';
 
   @override
   String get badgeAiModelTflite => 'AI मॉडल (TFLite)';
@@ -577,7 +577,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get stepCaptureImage => 'फोटो कैप्चर';
 
   @override
-  String get stepRearPhoto => 'पिछला मिल्क-मिरर फोटो';
+  String get stepRearPhoto => 'पिछला थन फोटो';
 
   @override
   String get stepAnimalDetection => 'पशु पहचान';
@@ -631,7 +631,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'स्पष्ट पिछले थन फोटो का उपयोग करें; अधिक लेबल्ड फोटो जोड़ें।';
 
   @override
-  String get alertHighConfidence => 'उच्च-विश्वास मिल्क मिरर विश्लेषण';
+  String get alertHighConfidence => 'उच्च-विश्वास పాల Predictor विश्लेषण';
 
   @override
   String get tipHighConfidence =>
@@ -651,4 +651,209 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get overlayUdder => 'थन';
+
+  @override
+  String get navHome => 'होम';
+
+  @override
+  String get navGalleries => 'गैलरी';
+
+  @override
+  String get navScan => 'स्कैन';
+
+  @override
+  String get navInsights => 'अंतर्दृष्टि';
+
+  @override
+  String get navAbout => 'परिचय';
+
+  @override
+  String get viewAll => 'सभी देखें';
+
+  @override
+  String get latestPrediction => 'नवीनतम भविष्यवाणी';
+
+  @override
+  String get quickInsights => 'त्वरित अंतर्दृष्टि';
+
+  @override
+  String get recentAnalyses => 'हाल के विश्लेषण';
+
+  @override
+  String get insightUdderHealth => 'थन स्वास्थ्य';
+
+  @override
+  String get insightSymmetry => 'सममिति';
+
+  @override
+  String get insightBodyCondition => 'शारीरिक स्थिति';
+
+  @override
+  String get insightHeatStress => 'गर्मी तनाव';
+
+  @override
+  String get statusGood => 'अच्छा';
+
+  @override
+  String get statusLow => 'कम';
+
+  @override
+  String get statusDash => '—';
+
+  @override
+  String get estimatedDailyMilkYield => 'अनुमानित दैनिक दूध उपज';
+
+  @override
+  String get highYieldPotential => 'उच्च उपज क्षमता';
+
+  @override
+  String get healthStatus => 'स्वास्थ्य स्थिति';
+
+  @override
+  String get confidence => 'विश्वास';
+
+  @override
+  String get noPredictionsYet => 'अभी कोई भविष्यवाणी नहीं';
+
+  @override
+  String get noPredictionsHint =>
+      'पिछले थन का फोटो लेने के लिए स्कैन टैप करें और पहली उपज अनुमान प्राप्त करें।';
+
+  @override
+  String get startScan => 'स्कैन शुरू करें';
+
+  @override
+  String get emptyRecentHint =>
+      'स्कैन करने के बाद आपके हाल के विश्लेषण यहाँ दिखेंगे।';
+
+  @override
+  String get galleriesTitle => 'गैलरी';
+
+  @override
+  String get addPhoto => 'फोटो जोड़ें';
+
+  @override
+  String get samplePhotos => 'नमूना फोटो';
+
+  @override
+  String get samplePhotosHint =>
+      'प्रोजेक्ट में assets/images/ के अंतर्गत फोटो जोड़ें, फिर ऐप पुनः बनाएं।';
+
+  @override
+  String myScans(int count) {
+    return 'मेरे स्कैन ($count)';
+  }
+
+  @override
+  String get myScansEmpty =>
+      'स्कैन करने के बाद पूर्ण AI विश्लेषण यहाँ दिखाई देंगे।';
+
+  @override
+  String get insightsTitle => 'अंतर्दृष्टि';
+
+  @override
+  String get insightsSubtitle =>
+      'आपके हाल के పాల Predictor विश्लेषण का सारांश।';
+
+  @override
+  String get totalScans => 'कुल स्कैन';
+
+  @override
+  String get latestYield => 'नवीनतम उपज';
+
+  @override
+  String get latestConfidence => 'नवीनतम विश्वास';
+
+  @override
+  String get insightsEmpty => 'व्यक्तिगत डेयरी अंतर्दृष्टि के लिए स्कैन चलाएं।';
+
+  @override
+  String get aboutTagline => 'AI संचालित डेयरी विश्लेषण';
+
+  @override
+  String get aboutWhatWeDo => 'हम क्या करते हैं';
+
+  @override
+  String get aboutWhatWeDoBody =>
+      'भैंस के पिछले थन के फोटो का विश्लेषण करके ऑन-डिवाइस AI और एस्कुचeon ज्यामिति से दैनिक दूध उत्पादन का अनुमान लगाते हैं।';
+
+  @override
+  String get aboutBuiltFor => 'किसके लिए बनाया';
+
+  @override
+  String get aboutBuiltForBody =>
+      'स्थानीय / देसी भैंस — पिछले थन कैप्चर वर्कफ़्लो।';
+
+  @override
+  String get aboutVersion => 'संस्करण';
+
+  @override
+  String aboutCopyright(int year) {
+    return '© $year పాల Predictor';
+  }
+
+  @override
+  String get choosePhotoSource => 'फोटो स्रोत चुनें';
+
+  @override
+  String get choosePhotoSourceSub =>
+      'नया पिछला फोटो लें या अपने डिवाइस से चुनें';
+
+  @override
+  String get cameraSubtitle => 'नया फोटो लें';
+
+  @override
+  String get gallerySubtitle => 'डिवाइस फोटो से चुनें';
+
+  @override
+  String get samplePhotosBundled => 'नमूना फोटो (बंडल)';
+
+  @override
+  String get captureGuidelines => 'कैप्चर दिशानिर्देश';
+
+  @override
+  String get captureGuidelinesSub => 'स्कैन करते समय लाइव सुझाव';
+
+  @override
+  String get captureTipClearImage => 'स्पष्ट फोटो = बेहतर भविष्यवाणी';
+
+  @override
+  String get captureLive => 'लाइव';
+
+  @override
+  String captureTipNofTotal(int current, int total) {
+    return 'सुझाव $current / $total';
+  }
+
+  @override
+  String get guidelineStandBehind => 'भैंस के 3–5 फीट पीछे खड़े हों';
+
+  @override
+  String get guidelineCameraLevel => 'कैमरा थन की ऊँचाई पर रखें';
+
+  @override
+  String get guidelineFullUdder => 'पूरा थन फ्रेम में कैप्चर करें';
+
+  @override
+  String get guidelinePortrait => 'पोर्ट्रेट मोड का उपयोग करें';
+
+  @override
+  String get guidelineLighting => 'अच्छी रोशनी सुनिश्चित करें';
+
+  @override
+  String get guidelineCleanUdder => 'थन और पूंछ क्षेत्र साफ रखें';
+
+  @override
+  String get onboardingSkip => 'छोड़ें';
+
+  @override
+  String get onboardingNext => 'आगे';
+
+  @override
+  String get onboardingGetStarted => 'शुरू करें';
+
+  @override
+  String litersPerDayShort(String liters) {
+    return '$liters ली/दिन';
+  }
 }
