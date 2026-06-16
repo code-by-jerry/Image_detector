@@ -559,7 +559,12 @@ class RearAnatomyDetector {
     l = Offset(l.dx, pinY);
     r = Offset(r.dx, pinY);
 
-    var a = Offset(spineX, math.min(pointA.dy, pinY - 0.10).clamp(box.top / h + 0.02, pinY - 0.07));
+    final pointAMaxY = pinY - 0.07;
+    final pointAMinY = math.min(box.top / h + 0.02, pointAMaxY);
+    var a = Offset(
+      spineX,
+      math.min(pointA.dy, pinY - 0.10).clamp(pointAMinY, pointAMaxY),
+    );
     var u = udder;
 
     // Keep udder centered unless pink mass is clearly off-axis (<12% offset).
@@ -572,9 +577,11 @@ class RearAnatomyDetector {
       );
     }
 
+    final udderMinY = pinY + 0.10;
+    final udderMaxY = math.max(udderMinY, (box.bottom / h) - 0.02);
     u = Offset(
       u.dx,
-      u.dy.clamp(pinY + 0.10, (box.bottom / h) - 0.02).clamp(pinY + 0.08, 0.88),
+      u.dy.clamp(udderMinY, udderMaxY).clamp(pinY + 0.08, 0.88),
     );
 
     return _LandmarkSet(a, l, r, u);
