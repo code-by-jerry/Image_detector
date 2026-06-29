@@ -788,7 +788,7 @@ class DetectorHomePageState extends State<DetectorHomePage> {
                         const SizedBox(height: 12),
                         _buildOriginalModelCard(context, _prediction!),
                       ],
-                      if (_prediction!.diagnostics != null) ...[
+                      if (kDebugMode && _prediction!.diagnostics != null) ...[
                         const SizedBox(height: 12),
                         _buildDiagnosticsExpansion(context, _prediction!.diagnostics!),
                       ],
